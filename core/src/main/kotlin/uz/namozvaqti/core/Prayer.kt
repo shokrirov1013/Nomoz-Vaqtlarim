@@ -102,3 +102,20 @@ object PrayerTexts {
         return "${words[m] ?: m.toString()} daqiqa"
     }
 }
+
+/**
+ * Tayyor ovoz paketi (voicepack/phrases.json) kalitlari. Fayl nomi: v_<til>_<kalit>.mp3.
+ * Paket muloyim (gentle) matnlar uchun yozilgan; oldindan eslatma — faqat 5 daqiqa uchun.
+ */
+object VoiceKeys {
+    const val PRE_MINUTES = 5
+    fun pre(p: Prayer) = "pre_${p.key}"
+    fun main(p: Prayer, date: LocalDate, gender: Gender) =
+        if (PrayerTexts.isFridayMale(p, date, gender)) "main_jumah" else "main_${p.key}"
+
+    fun followup(p: Prayer, index: Int, total: Int) = when {
+        index >= total -> "fl_${p.key}"
+        index % 2 == 1 -> "f1_${p.key}"
+        else -> "f2_${p.key}"
+    }
+}

@@ -1,0 +1,27 @@
+name: Voice pack
+
+# Tayyor ovoz paketini (o'zbek + rus) yaratadi va app/src/main/res/raw ga commit qiladi.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -U edge-tts
+      - run: python voicepack/make_pack.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add app/src/main/res/raw
+          git commit -qm "Tayyor ovoz paketi (o'zbek Madina, rus Svetlana)" || echo "o'zgarish yo'q"
+          git pull --rebase origin main
+          git push origin HEAD:main
