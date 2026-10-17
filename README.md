@@ -1,6 +1,6 @@
 # Namoz Vaqtlarim
 
-Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, Oq-Pushti-Siyohrang **Liquid Glass** dizayn).
+Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, ikonkaga mos qorong'i zumrad-oltin **Liquid Glass** dizayn).
 
 | | |
 |---|---|
@@ -24,6 +24,8 @@ Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, Oq-Pushti
 - **Tahajjud**: ixtiyoriy kunlarni belgilash, har kun uchun vaqt, haftalik takrorlanish, tunning oxirgi uchdan biri hisobi, ovoz/vibratsiya.
 - **Taqvim**: Milodiy va Hijriy (Um al-Qura, ±2 kun moslash), namoz tarixi va shaxsiy eslatmalar.
 - **Tarix va statistika**: kunlik/haftalik/oylik — faqat foydalanuvchi belgilagan ma'lumotlar asosida (belgilanmagan = “belgilanmagan”, “o'qilmagan” emas).
+- **Suralar**: Oyatal Kursi, Fotiha, Ixlos, Falaq va Nos — arabcha matn, lotincha o'qilishi va qisqa ma'nosi.
+- **Muloyim ohang** (standart yoqilgan): qisqa va yumshoq "ting", asta kuchayadigan budilnik, yengil tebranish, muloyim matnlar; ovoz balandligi sozlanadi. O'chirib, dastlabki qisqa matnlarga qaytish mumkin.
 - **Yangilanish**: GitHub Releases orqali tekshiradi, yangi versiya raqami + o'zgarishlar + “Yuklab olish va o'rnatish”.
 
 ## Eslatmalar qanday ishonchli ishlaydi

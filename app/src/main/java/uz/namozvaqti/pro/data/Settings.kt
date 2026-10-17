@@ -35,6 +35,9 @@ data class Settings(
     val followupIntervalMinutes: Int = 10,
     val followupCount: Int = 3,
     val playInSilentMode: Boolean = false,
+    /** Muloyim ohang: yumshoq ovoz, qisqa ting, muloyim matn, asta kuchayadigan budilnik. */
+    val gentle: Boolean = true,
+    val reminderVolume: Int = 70,
     val ttsLang: String = "auto",
 
     val fajrAlarmEnabled: Boolean = false,
@@ -88,6 +91,8 @@ class SettingsStore(context: Context) {
             followupIntervalMinutes = p.getInt("followupInterval", d.followupIntervalMinutes),
             followupCount = p.getInt("followupCount", d.followupCount),
             playInSilentMode = p.getBoolean("playInSilentMode", d.playInSilentMode),
+            gentle = p.getBoolean("gentle", d.gentle),
+            reminderVolume = p.getInt("reminderVolume", d.reminderVolume),
             ttsLang = p.getString("ttsLang", d.ttsLang) ?: d.ttsLang,
             fajrAlarmEnabled = p.getBoolean("fajrAlarmEnabled", d.fajrAlarmEnabled),
             fajrSound = p.getString("fajrSound", d.fajrSound) ?: d.fajrSound,
@@ -121,6 +126,8 @@ class SettingsStore(context: Context) {
             putInt("followupInterval", s.followupIntervalMinutes)
             putInt("followupCount", s.followupCount)
             putBoolean("playInSilentMode", s.playInSilentMode)
+            putBoolean("gentle", s.gentle)
+            putInt("reminderVolume", s.reminderVolume)
             putString("ttsLang", s.ttsLang)
             putBoolean("fajrAlarmEnabled", s.fajrAlarmEnabled)
             putString("fajrSound", s.fajrSound)

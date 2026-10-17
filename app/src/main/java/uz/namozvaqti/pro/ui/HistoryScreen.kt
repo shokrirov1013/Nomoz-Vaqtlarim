@@ -41,7 +41,7 @@ import java.time.ZoneId
 @Composable
 fun HistoryScreen(vm: AppViewModel) {
     val s by vm.settings.collectAsState()
-    val today = vm.now.collectAsState().value.toLocalDate()
+    val today by vm.today.collectAsState()
     var selectedStr by rememberSaveable { mutableStateOf(today.toString()) }
     val selected = LocalDate.parse(selectedStr)
     var period by rememberSaveable { mutableStateOf("week") }
@@ -65,19 +65,19 @@ fun HistoryScreen(vm: AppViewModel) {
         GlassCard(Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.clickableNoRipple { selectedStr = selected.minusDays(1).toString() }.padding(8.dp)) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi kun", tint = Glass.PurpleDeep)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi kun", tint = Glass.GoldBright)
                 }
                 Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(Fmt.weekday(selected.dayOfWeek) + if (selected == today) " (bugun)" else "", style = Type.BodyBold)
                     Text(Fmt.gregorian(selected), style = Type.Caption)
-                    Text(Fmt.hijri(selected, s.hijriAdjust), style = Type.Caption.copy(color = Glass.PurpleDeep))
+                    Text(Fmt.hijri(selected, s.hijriAdjust), style = Type.Caption.copy(color = Glass.GoldBright))
                 }
                 Box(
                     Modifier.clickableNoRipple { if (selected.isBefore(today)) selectedStr = selected.plusDays(1).toString() }.padding(8.dp),
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight, "Keyingi kun",
-                        tint = if (selected.isBefore(today)) Glass.PurpleDeep else Glass.Lavender,
+                        tint = if (selected.isBefore(today)) Glass.GoldBright else Glass.Mint,
                     )
                 }
             }
@@ -128,10 +128,10 @@ private fun StatsCard(title: String, stats: PeriodStats) {
     GlassCard(Modifier.fillMaxWidth()) {
         Text(title, style = Type.Caption)
         Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 4.dp)) {
-            Text("${stats.done}", style = Type.Big.copy(color = Glass.PurpleDeep))
+            Text("${stats.done}", style = Type.Big.copy(color = Glass.GoldBright))
             Text(" / ${stats.slots} bajarildi", style = Type.Body, modifier = Modifier.padding(bottom = 8.dp))
             Box(Modifier.weight(1f))
-            Text("${stats.percentDone}%", style = Type.H2.copy(color = Glass.PurpleDeep))
+            Text("${stats.percentDone}%", style = Type.H2.copy(color = Glass.GoldBright))
         }
         ProgressBar(stats.percentDone / 100f)
         Text("Belgilanmagan: ${stats.unmarked}", style = Type.Caption, modifier = Modifier.padding(top = 6.dp, bottom = 8.dp))

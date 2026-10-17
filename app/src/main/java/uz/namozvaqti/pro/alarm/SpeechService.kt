@@ -11,6 +11,7 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.SystemClock
 import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
@@ -90,16 +91,47 @@ class SpeechService : Service() {
         playChime { if (id == itemId) speak(text, id) }
     }
 
+    /**
+     * "Ting" ovozi. Muloyim rejimda: ovoz 0 dan asta ko'tariladi, ~4,5 soniyada yumshoq so'nadi va keyin nutq boshlanadi.
+     * Balandlik Sozlamalardagi "Eslatma ovozi balandligi"ga bog'liq.
+     */
     private fun playChime(onDone: () -> Unit) {
+        val st = ServiceLocator.get(this).settings.value
+        val target = (st.reminderVolume / 100f).coerceIn(0.1f, 1f)
+        val limitMs = if (st.gentle) 4500 else Int.MAX_VALUE
         try {
             val mp = MediaPlayer()
             player = mp
             mp.setAudioAttributes(attrs(false))
             resources.openRawResourceFd(R.raw.ting).use { mp.setDataSource(it.fileDescriptor, it.startOffset, it.length) }
-            mp.setOnCompletionListener { it.release(); player = null; onDone() }
-            mp.setOnErrorListener { p, _, _ -> p.release(); player = null; onDone(); true }
             mp.prepare()
+            mp.setVolume(0f, 0f)
+            var finished = false
+            val started = SystemClock.uptimeMillis()
+            val durationMs = minOf(mp.duration, limitMs)
+            fun finish() {
+                if (finished) return
+                finished = true
+                runCatching { mp.stop() }
+                mp.release()
+                if (player === mp) player = null
+                onDone()
+            }
+            val ramp = object : Runnable {
+                override fun run() {
+                    if (finished) return
+                    val t = SystemClock.uptimeMillis() - started
+                    val fadeIn = (t / 700f).coerceAtMost(1f)
+                    val fadeOut = ((durationMs - t) / 1200f).coerceIn(0f, 1f)
+                    val v = target * fadeIn * fadeOut
+                    mp.setVolume(v, v)
+                    if (t >= durationMs) finish() else handler.postDelayed(this, 60)
+                }
+            }
+            mp.setOnCompletionListener { finish() }
+            mp.setOnErrorListener { _, _, _ -> finish(); true }
             mp.start()
+            handler.post(ramp)
         } catch (e: Exception) {
             Log.w(TAG, "ting ijro bo'lmadi", e)
             player?.release(); player = null
@@ -129,7 +161,13 @@ class SpeechService : Service() {
             override fun onError(utteranceId: String?) { handler.post { itemDone(id) } }
         })
         engine.setAudioAttributes(attrs(true))
-        val r = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "u$id")
+        val st = ServiceLocator.get(this).settings.value
+        engine.setSpeechRate(if (st.gentle) 0.85f else 0.92f)
+        engine.setPitch(if (st.gentle) 0.95f else 1.0f)
+        val params = android.os.Bundle().apply {
+            putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, (st.reminderVolume / 100f).coerceIn(0.1f, 1f))
+        }
+        val r = engine.speak(text, TextToSpeech.QUEUE_FLUSH, params, "u$id")
         if (r != TextToSpeech.SUCCESS) itemDone(id)
     }
 

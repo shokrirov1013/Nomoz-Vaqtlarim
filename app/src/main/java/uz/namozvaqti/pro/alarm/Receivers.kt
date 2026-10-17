@@ -70,8 +70,8 @@ class ReminderReceiver : BroadcastReceiver() {
 
         val text = when (event.kind) {
             ReminderKind.PRE -> PrayerTexts.preText(prayer, s.preMinutes)
-            ReminderKind.MAIN -> PrayerTexts.mainText(prayer, date, s.gender)
-            ReminderKind.FOLLOWUP -> PrayerTexts.followupText(prayer, event.followupIndex, s.policy.followups)
+            ReminderKind.MAIN -> PrayerTexts.mainText(prayer, date, s.gender, s.gentle)
+            ReminderKind.FOLLOWUP -> PrayerTexts.followupText(prayer, event.followupIndex, s.policy.followups, s.gentle)
         }
         Notifications.postReminder(ctx, event, text)
         // Ovoz xizmatini boshlab bo'lmasa, tizim ovozi bilan zaxira bildirishnoma.

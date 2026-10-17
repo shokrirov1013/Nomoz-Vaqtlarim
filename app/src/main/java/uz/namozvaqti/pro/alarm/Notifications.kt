@@ -15,7 +15,7 @@ import uz.namozvaqti.pro.MainActivity
 import uz.namozvaqti.pro.R
 
 object Notifications {
-    const val CH_REMINDER = "reminders"
+    const val CH_REMINDER = "reminders_v2"
     const val CH_PLAYBACK = "playback"
     const val CH_ALARM = "alarm"
     const val CH_UPDATE = "update"
@@ -37,8 +37,9 @@ object Notifications {
             description = "Namoz vaqti va qayta eslatmalar"
             setSound(null, null)
             enableVibration(true)
-            vibrationPattern = longArrayOf(0, 300, 200, 300)
+            vibrationPattern = longArrayOf(0, 160, 140, 160)
         })
+        nm.deleteNotificationChannel("reminders")
         nm.createNotificationChannel(NotificationChannel(CH_PLAYBACK, "Ovozli xabar", NotificationManager.IMPORTANCE_LOW).apply {
             description = "Eslatma ovozi ijro etilayotganda"
             setSound(null, null)
@@ -104,7 +105,8 @@ object Notifications {
 
     /** Budilnik xizmatini boshlab bo'lmaganda: to'liq ekranli bildirishnoma + tizim budilnik ovozi. */
     fun postRingFallback(ctx: Context, kind: RingKind) {
-        val text = if (kind == RingKind.FAJR) "Bomdod vaqti bo'ldi. Namozga turing." else "Tahajjud vaqti bo'ldi."
+        val st = uz.namozvaqti.pro.ServiceLocator.get(ctx).settings.value
+        val text = RingTexts.of(kind, st.gentle, st.gender)
         val full = PendingIntentFactory.alarmScreen(ctx, kind)
         val n = NotificationCompat.Builder(ctx, CH_ALARM_SOUND)
             .setSmallIcon(R.drawable.ic_stat_namoz)

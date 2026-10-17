@@ -48,7 +48,7 @@ private data class Cell(val date: LocalDate, val primary: Int, val secondary: In
 @Composable
 fun CalendarScreen(vm: AppViewModel) {
     val s by vm.settings.collectAsState()
-    val today = vm.now.collectAsState().value.toLocalDate()
+    val today by vm.today.collectAsState()
     var hijriMode by rememberSaveable { mutableStateOf(false) }
     var selectedStr by rememberSaveable { mutableStateOf(today.toString()) }
     val selected = LocalDate.parse(selectedStr)
@@ -94,11 +94,11 @@ fun CalendarScreen(vm: AppViewModel) {
                 Box(Modifier.clickableNoRipple {
                     if (!hijriMode) { val p = YearMonth.of(gy, gm).minusMonths(1); gy = p.year; gm = p.monthValue }
                     else { val (y, m) = HijriCalendar.prevMonth(hy, hm); hy = y; hm = m }
-                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi oy", tint = Glass.PurpleDeep) }
+                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi oy", tint = Glass.GoldBright) }
                 Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     if (!hijriMode) {
                         Text("${Fmt.months[gm - 1]} $gy", style = Type.H2)
-                        Text(hijriRangeLabel(cells, s.hijriAdjust), style = Type.Caption.copy(color = Glass.PurpleDeep))
+                        Text(hijriRangeLabel(cells, s.hijriAdjust), style = Type.Caption.copy(color = Glass.GoldBright))
                     } else {
                         Text("${HijriCalendar.monthNames[hm - 1]} $hy", style = Type.H2)
                         Text(gregorianRangeLabel(cells), style = Type.Caption)
@@ -107,7 +107,7 @@ fun CalendarScreen(vm: AppViewModel) {
                 Box(Modifier.clickableNoRipple {
                     if (!hijriMode) { val p = YearMonth.of(gy, gm).plusMonths(1); gy = p.year; gm = p.monthValue }
                     else { val (y, m) = HijriCalendar.nextMonth(hy, hm); hy = y; hm = m }
-                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Keyingi oy", tint = Glass.PurpleDeep) }
+                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Keyingi oy", tint = Glass.GoldBright) }
             }
             Row(Modifier.fillMaxWidth().padding(top = 6.dp)) {
                 Fmt.weekdaysShort.forEach {
@@ -162,35 +162,31 @@ private fun gregorianRangeLabel(cells: List<Cell>): String {
     return if (a.month == b.month) "${Fmt.months[a.monthValue - 1]} ${a.year}" else "${Fmt.months[a.monthValue - 1]} — ${Fmt.months[b.monthValue - 1]} ${b.year}"
 }
 
+private val CellShape = RoundedCornerShape(14.dp)
+private val SelectedBrush = Brush.linearGradient(listOf(Glass.GoldBright, Glass.GoldDeep))
+
 @Composable
 private fun DayCell(
     cell: Cell, hijriMode: Boolean, isToday: Boolean, isSelected: Boolean,
     doneCount: Int, hasNote: Boolean, modifier: Modifier, onClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(14.dp)
+    val bg = when {
+        isSelected -> Modifier.background(SelectedBrush, CellShape)
+        isToday -> Modifier.glassSurface(CellShape, Glass.Tint)
+        else -> Modifier.background(Color.White.copy(alpha = 0.045f), CellShape)
+    }
     Column(
-        modifier
-            .aspectRatio(0.82f)
-            .padding(2.dp)
-            .clip(shape)
-            .background(
-                when {
-                    isSelected -> Brush.linearGradient(listOf(Glass.Purple.copy(alpha = 0.85f), Glass.PurpleDeep.copy(alpha = 0.85f)))
-                    isToday -> Brush.linearGradient(listOf(Glass.PinkSoft, Glass.Pink.copy(alpha = 0.6f)))
-                    else -> Brush.linearGradient(listOf(Color.White.copy(alpha = 0.45f), Color.White.copy(alpha = 0.25f)))
-                },
-            )
-            .then(if (isToday && !isSelected) Modifier.border(1.dp, Glass.Purple, shape) else Modifier)
-            .clickableNoRipple(onClick),
+        modifier.aspectRatio(0.82f).padding(2.dp).then(bg).clickableNoRipple(onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        val fg = if (isSelected) Color.White else Glass.Ink
+        val fg = if (isSelected) Glass.OnGold else Glass.Ink
+        val sub = if (isSelected) Glass.OnGold.copy(alpha = 0.75f) else Glass.GoldBright.copy(alpha = 0.7f)
         Text("${cell.primary}", style = Type.BodyBold.copy(fontSize = 16.sp, color = fg))
-        Text("${cell.secondary}", style = Type.Caption.copy(fontSize = 10.sp, color = if (isSelected) Color.White.copy(alpha = 0.8f) else Glass.PurpleDeep.copy(alpha = 0.7f)))
+        Text("${cell.secondary}", style = Type.Caption.copy(fontSize = 10.sp, color = sub))
         Row(Modifier.height(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (doneCount > 0) Text("$doneCount/5", style = Type.Caption.copy(fontSize = 9.sp, color = if (isSelected) Color.White else Glass.PurpleDeep))
-            if (hasNote) Box(Modifier.padding(start = 2.dp).size(5.dp).clip(RoundedCornerShape(50)).background(if (isSelected) Color.White else Glass.Pink))
+            if (doneCount > 0) Text("$doneCount/5", style = Type.Caption.copy(fontSize = 9.sp, color = if (isSelected) Glass.OnGold else Glass.Emerald))
+            if (hasNote) Box(Modifier.padding(start = 2.dp).size(5.dp).background(if (isSelected) Glass.OnGold else Glass.Gold, RoundedCornerShape(50)))
         }
     }
 }
@@ -202,13 +198,17 @@ private fun DayDetails(
     var text by remember(date) { mutableStateOf("") }
     GlassCard(Modifier.fillMaxWidth()) {
         Text(Fmt.gregorianFull(date), style = Type.H2)
-        Text(Fmt.hijri(date, adjust), style = Type.Caption.copy(color = Glass.PurpleDeep, fontSize = 14.sp))
+        Text(Fmt.hijri(date, adjust), style = Type.Caption.copy(color = Glass.GoldBright, fontSize = 14.sp))
         Box(Modifier.height(8.dp))
         Text("Namozlar", style = Type.BodyBold)
         Prayer.entries.forEach { p ->
             Row(Modifier.padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(p.title, style = Type.Body, modifier = Modifier.weight(1f))
-                Text(if (p in done) "✓ Bajarildi" else "Belgilanmagan", style = Type.Caption.copy(color = if (p in done) Glass.PurpleDeep else Glass.InkSoft, fontSize = 14.sp))
+                GlassTick(p in done, size = 22.dp)
+                Text(
+                    if (p in done) "  Bajarildi" else "  Belgilanmagan",
+                    style = Type.Caption.copy(color = if (p in done) Glass.GoldBright else Glass.InkSoft, fontSize = 14.sp),
+                )
             }
         }
         Box(Modifier.height(10.dp))

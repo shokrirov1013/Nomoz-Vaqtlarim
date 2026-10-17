@@ -74,11 +74,13 @@ class AlarmActivity : ComponentActivity() {
                     ) {
                         CrescentMosqueArt(Modifier.size(width = 140.dp, height = 120.dp))
                         Spacer(Modifier.height(16.dp))
-                        Text(Fmt.time(LocalTime.now()), style = Type.Big.copy(color = Glass.PurpleDeep))
+                        Text(Fmt.time(LocalTime.now()), style = Type.Big.copy(color = Glass.GoldBright))
                         Text(kind.title, style = Type.H1)
+                        val st = ServiceLocator.get(app).settings.value
                         Text(
-                            if (kind == RingKind.FAJR) "Bomdod vaqti bo'ldi. Namozga turing." else "Tahajjud vaqti bo'ldi.",
-                            style = Type.Body, modifier = Modifier.padding(top = 4.dp),
+                            RingTexts.of(kind, st.gentle, st.gender),
+                            style = Type.Body, textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            modifier = Modifier.padding(top = 4.dp, start = 12.dp, end = 12.dp),
                         )
                         Spacer(Modifier.height(28.dp))
                         GlassCard(Modifier.fillMaxWidth()) {

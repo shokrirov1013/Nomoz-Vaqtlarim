@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -22,6 +23,9 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import uz.namozvaqti.core.Gender
+import uz.namozvaqti.core.Prayer
+import uz.namozvaqti.core.PrayerTexts
 import uz.namozvaqti.pro.R
 import uz.namozvaqti.pro.ServiceLocator
 import uz.namozvaqti.pro.data.SOUND_BUILTIN
@@ -66,7 +70,7 @@ class RingService : Service() {
         val n = NotificationCompat.Builder(this, Notifications.CH_ALARM)
             .setSmallIcon(R.drawable.ic_stat_namoz)
             .setContentTitle(kind.title)
-            .setContentText(if (kind == RingKind.FAJR) "Bomdod vaqti bo'ldi. Namozga turing." else "Tahajjud vaqti bo'ldi.")
+            .setContentText(RingTexts.of(kind, s.gentle, s.gender))
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -82,8 +86,11 @@ class RingService : Service() {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
         wake = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "namoz:ring").apply { acquire(5 * 60_000L) }
 
-        startSound(if (kind == RingKind.FAJR) s.fajrSound else s.tahajjudSound)
-        if (if (kind == RingKind.FAJR) s.fajrVibration else s.tahajjudVibration) startVibration()
+        startSound(if (kind == RingKind.FAJR) s.fajrSound else s.tahajjudSound, s.gentle)
+        if (if (kind == RingKind.FAJR) s.fajrVibration else s.tahajjudVibration) {
+            // Muloyim rejimda tebranish uyg'otishni bir necha soniya kechiktirib, yengil boshlanadi.
+            if (s.gentle) handler.postDelayed({ startVibration(true) }, 6_000L) else startVibration(false)
+        }
         RingState.set(kind)
         // Hech kim to'xtatmasa, 3 daqiqadan keyin o'zi to'xtaydi.
         handler.removeCallbacksAndMessages(null)
@@ -91,7 +98,8 @@ class RingService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun startSound(sound: String) {
+    /** Muloyim rejim: ovoz juda past boshlanadi va ~25 soniyada to'liq balandlikka asta ko'tariladi. */
+    private fun startSound(sound: String, gentle: Boolean) {
         player?.release()
         player = null
         val attrs = AudioAttributes.Builder()
@@ -117,15 +125,37 @@ class RingService : Service() {
         }
         val mp = build(sound) ?: build(SOUND_BUILTIN)
         player = mp
-        mp?.start()
+        if (mp == null) return
+        if (!gentle) {
+            mp.start()
+            return
+        }
+        mp.setVolume(0.06f, 0.06f)
+        mp.start()
+        val started = SystemClock.uptimeMillis()
+        val ramp = object : Runnable {
+            override fun run() {
+                val p = player ?: return
+                val x = ((SystemClock.uptimeMillis() - started) / 25_000f).coerceIn(0f, 1f)
+                val v = 0.06f + 0.94f * x * x // yumshoq (kvadratik) ko'tarilish
+                runCatching { p.setVolume(v, v) }
+                if (x < 1f) handler.postDelayed(this, 250)
+            }
+        }
+        handler.post(ramp)
     }
 
-    private fun startVibration() {
-        val effect = VibrationEffect.createWaveform(longArrayOf(0, 700, 500), 0)
-        val v: Vibrator? = if (Build.VERSION.SDK_INT >= 31)
+    private fun startVibration(gentle: Boolean) {
+        val v0: Vibrator? = if (Build.VERSION.SDK_INT >= 31)
             (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         else @Suppress("DEPRECATION") (getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
-        v?.vibrate(effect)
+        val effect = when {
+            !gentle -> VibrationEffect.createWaveform(longArrayOf(0, 700, 500), 0)
+            v0?.hasAmplitudeControl() == true ->
+                VibrationEffect.createWaveform(longArrayOf(0, 350, 1650), intArrayOf(0, 60, 0), 0) // yengil, siyrak
+            else -> VibrationEffect.createWaveform(longArrayOf(0, 200, 1800), 0)
+        }
+        v0?.vibrate(effect)
     }
 
     override fun onDestroy() {
@@ -176,4 +206,11 @@ internal object PendingIntentFactory {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
             android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT,
         )
+}
+
+object RingTexts {
+    fun of(kind: RingKind, gentle: Boolean, gender: Gender): String = when (kind) {
+        RingKind.FAJR -> PrayerTexts.mainText(Prayer.FAJR, java.time.LocalDate.now(), gender, gentle)
+        RingKind.TAHAJJUD -> if (gentle) "Tahajjud vaqti kirdi. Marhamat, Rabbingizga duo qilib oling." else "Tahajjud vaqti bo'ldi."
+    }
 }

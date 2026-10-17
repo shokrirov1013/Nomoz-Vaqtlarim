@@ -35,14 +35,14 @@ fun UpdateScreen(vm: AppViewModel) {
         Text("Yangilanish", style = Type.H1, modifier = Modifier.padding(top = 4.dp))
         GlassCard(Modifier.fillMaxWidth()) {
             Text("Joriy versiya", style = Type.Caption)
-            Text(BuildConfig.VERSION_NAME, style = Type.Big.copy(color = Glass.PurpleDeep))
+            Text(BuildConfig.VERSION_NAME, style = Type.Big.copy(color = Glass.GoldBright))
             Text("GitHub: ${BuildConfig.GITHUB_REPO}", style = Type.Caption)
         }
 
         when (val st = state) {
             UpdateUi.Idle -> {
                 if (!UpdateManager.repoConfigured()) {
-                    GlassCard(Modifier.fillMaxWidth(), tint = Glass.PinkSoft) {
+                    GlassCard(Modifier.fillMaxWidth(), tint = Glass.Tint) {
                         Text("GitHub repository hali sozlanmagan. README’dagi “GitHub repository nomi” bosqichiga qarang.", style = Type.Body)
                     }
                 } else GlassButton("Yangilanishni tekshirish", { vm.checkUpdate() }, Modifier.fillMaxWidth())
@@ -53,13 +53,13 @@ fun UpdateScreen(vm: AppViewModel) {
                 GlassButton("Qayta tekshirish", { vm.checkUpdate() }, Modifier.fillMaxWidth(), filled = false)
             }
             is UpdateUi.Error -> {
-                GlassCard(Modifier.fillMaxWidth(), tint = Glass.PinkSoft) { Text(st.message, style = Type.Body.copy(color = Glass.Danger)) }
+                GlassCard(Modifier.fillMaxWidth(), tint = Glass.Tint) { Text(st.message, style = Type.Body.copy(color = Glass.Danger)) }
                 GlassButton("Qayta urinish", { vm.checkUpdate() }, Modifier.fillMaxWidth(), filled = false)
             }
             is UpdateUi.Available -> {
-                GlassCard(Modifier.fillMaxWidth(), tint = Glass.PinkSoft) {
+                GlassCard(Modifier.fillMaxWidth(), tint = Glass.Tint) {
                     Text("Yangi versiya mavjud", style = Type.Caption)
-                    Text(st.release.version, style = Type.Big.copy(color = Glass.PurpleDeep))
+                    Text(st.release.version, style = Type.Big.copy(color = Glass.GoldBright))
                     if (st.release.sizeBytes > 0) Text("Hajmi: %.1f MB".format(st.release.sizeBytes / 1_048_576.0), style = Type.Caption)
                 }
                 GlassCard(Modifier.fillMaxWidth()) {

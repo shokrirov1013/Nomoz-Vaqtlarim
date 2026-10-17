@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.NamozVaqti" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.NamozVaqti" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/glass_bg</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
-    <color name="glass_bg">#FFFBF8FF</color>
+    <color name="glass_bg">#FF06231F</color>
 </resources>

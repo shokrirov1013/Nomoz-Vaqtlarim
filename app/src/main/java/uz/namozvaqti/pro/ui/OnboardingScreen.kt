@@ -99,7 +99,7 @@ fun OnboardingScreen(vm: AppViewModel) {
                     GlassButton("GPS orqali aniqlash", {
                         gpsLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
                     }, Modifier.fillMaxWidth())
-                    locMsg?.let { Text(it, style = Type.Caption.copy(color = Glass.PurpleDeep), modifier = Modifier.padding(top = 6.dp)) }
+                    locMsg?.let { Text(it, style = Type.Caption.copy(color = Glass.GoldBright), modifier = Modifier.padding(top = 6.dp)) }
                     Text("Yoki shaharni qo'lda tanlang:", style = Type.Body, modifier = Modifier.padding(top = 12.dp, bottom = 6.dp))
                     Column(Modifier.heightIn(max = 260.dp).verticalScroll(rememberScrollState())) {
                         UzbekCities.all.forEach { c ->
@@ -159,6 +159,6 @@ private fun OnboardPerm(title: String, why: String, granted: Boolean, onGrant: (
             Text(title, style = Type.BodyBold)
             Text(why, style = Type.Caption)
         }
-        if (granted) Text("✓", style = Type.H2.copy(color = Glass.PurpleDeep)) else GlassButton("Ruxsat", onGrant, small = true)
+        if (granted) GlassTick(true) else GlassButton("Ruxsat", onGrant, small = true)
     }
 }

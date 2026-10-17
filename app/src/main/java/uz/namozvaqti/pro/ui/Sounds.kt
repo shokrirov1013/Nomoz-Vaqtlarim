@@ -35,7 +35,14 @@ object Sounds {
         return list
     }
 
-    fun titleOf(ctx: Context, id: String): String = choices(ctx).firstOrNull { it.id == id }?.title ?: "Ilova ovozi (ting)"
+    /** Tez: faqat bitta ovoz nomini o'qiydi (butun ro'yxatni emas). */
+    fun titleOf(ctx: Context, id: String): String = when (id) {
+        SOUND_BUILTIN -> "Ilova ovozi (ting)"
+        SOUND_DEFAULT_ALARM -> "Standart budilnik"
+        else -> runCatching {
+            RingtoneManager.getRingtone(ctx, android.net.Uri.parse(id)).getTitle(ctx)
+        }.getOrNull() ?: "Ilova ovozi (ting)"
+    }
 }
 
 @Composable
@@ -47,11 +54,13 @@ fun SoundPickerDialog(ctx: Context, current: String, onPick: (String) -> Unit, o
         text = {
             Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
                 items.forEach {
-                    Text(
-                        (if (it.id == current) "● " else "○ ") + it.title,
-                        style = if (it.id == current) Type.BodyBold else Type.Body,
-                        modifier = Modifier.fillMaxWidth().clickableNoRipple { onPick(it.id) }.padding(vertical = 10.dp),
-                    )
+                    androidx.compose.foundation.layout.Row(
+                        Modifier.fillMaxWidth().clickableNoRipple { onPick(it.id) }.padding(vertical = 10.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    ) {
+                        GlassTick(it.id == current, size = 22.dp)
+                        Text("  " + it.title, style = if (it.id == current) Type.BodyBold else Type.Body)
+                    }
                 }
             }
         },

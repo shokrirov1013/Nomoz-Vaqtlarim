@@ -39,8 +39,7 @@ fun TahajjudScreen(vm: AppViewModel) {
     val ctx = LocalContext.current
     val s by vm.settings.collectAsState()
     val days by vm.tahajjud.collectAsState()
-    val now by vm.now.collectAsState()
-    val today = now.toLocalDate()
+    val today by vm.today.collectAsState()
     var soundDialog by remember { mutableStateOf(false) }
 
     // Tunning oxirgi uchdan biri (Shomdan ertangi Bomdodgacha)
@@ -51,7 +50,7 @@ fun TahajjudScreen(vm: AppViewModel) {
 
     val enabledDays = days.filter { it.enabled }
     val next = if (s.tahajjudEnabled)
-        TahajjudRules.nextOccurrence(now, enabledDays.associate { it.dayOfWeek to LocalTime.of(it.hour, it.minute) }) else null
+        TahajjudRules.nextOccurrence(LocalDateTime.now(), enabledDays.associate { it.dayOfWeek to LocalTime.of(it.hour, it.minute) }) else null
 
     Column(
         Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
@@ -59,7 +58,7 @@ fun TahajjudScreen(vm: AppViewModel) {
     ) {
         Text("Tahajjud", style = Type.H1, modifier = Modifier.padding(top = 4.dp))
 
-        GlassCard(Modifier.fillMaxWidth(), tint = Glass.PinkSoft) {
+        GlassCard(Modifier.fillMaxWidth(), tint = Glass.Tint) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text("Tahajjud eslatmasi", style = Type.H2)
@@ -70,7 +69,7 @@ fun TahajjudScreen(vm: AppViewModel) {
                         style = Type.Caption.copy(fontSize = 14.sp),
                     )
                 }
-                Switch(checked = s.tahajjudEnabled, onCheckedChange = { on ->
+                GlassSwitch(checked = s.tahajjudEnabled, onCheckedChange = { on ->
                     vm.updateSettings(reschedule = false) { it.copy(tahajjudEnabled = on) }
                     vm.rescheduleTahajjud()
                 })
@@ -134,13 +133,13 @@ fun TahajjudScreen(vm: AppViewModel) {
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text("Ovoz", style = Type.Body)
-                    Text(Sounds.titleOf(ctx, s.tahajjudSound), style = Type.Caption)
+                    Text(remember(s.tahajjudSound) { Sounds.titleOf(ctx, s.tahajjudSound) }, style = Type.Caption)
                 }
                 GlassButton("Tanlash", { soundDialog = true }, small = true, filled = false)
             }
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("Vibratsiya", style = Type.Body, modifier = Modifier.weight(1f))
-                Switch(checked = s.tahajjudVibration, onCheckedChange = { on -> vm.updateSettings(false) { it.copy(tahajjudVibration = on) } })
+                GlassSwitch(checked = s.tahajjudVibration, onCheckedChange = { on -> vm.updateSettings(false) { it.copy(tahajjudVibration = on) } })
             }
             Box(Modifier.height(8.dp))
             GlassButton("Budilnikni sinab ko'rish", { RingService.start(ctx, RingKind.TAHAJJUD) }, small = true, filled = false)

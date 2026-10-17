@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -55,11 +54,27 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     val settings: StateFlow<Settings> = sl.settings.flow
 
-    /** Har soniyada yangilanadi (teskari sanoq uchun). */
-    val now = MutableStateFlow(LocalDateTime.now())
+    /** Har soniyada yangilanadi, lekin faqat kimdir (teskari sanoq) kuzatib turganda — batareya va FPS uchun. */
+    val now: StateFlow<LocalDateTime> = flow {
+        while (true) {
+            emit(LocalDateTime.now())
+            delay(1000L - System.currentTimeMillis() % 1000L)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3000), LocalDateTime.now())
+
+    /** Bugungi sana: faqat yarim tundan keyin o'zgaradi (butun ekranlarni har soniya qayta chizmaslik uchun). */
+    val today: StateFlow<LocalDate> = flow {
+        while (true) {
+            val n = LocalDateTime.now()
+            emit(n.toLocalDate())
+            val untilMidnight = java.time.Duration.between(n, n.toLocalDate().plusDays(1).atStartOfDay()).toMillis()
+            delay(untilMidnight.coerceIn(1_000L, 60_000L) + 200L)
+        }
+    }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.Eagerly, LocalDate.now())
+
     private val refreshTick = MutableStateFlow(0)
 
-    private val timesKey = combine(now.map { it.toLocalDate() }.distinctUntilChanged(), settings, refreshTick) { d, s, t ->
+    private val timesKey = combine(today, settings, refreshTick) { d, s, t ->
         Triple(d, listOf(s.lat, s.lon, s.method, s.hanafiAsr), t)
     }.distinctUntilChanged()
 
@@ -77,12 +92,6 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val update: StateFlow<UpdateUi> = _update
 
     init {
-        viewModelScope.launch {
-            while (true) {
-                now.value = LocalDateTime.now()
-                delay(1000)
-            }
-        }
         viewModelScope.launch(Dispatchers.IO) { ensureTahajjudDefaults() }
     }
 

@@ -56,12 +56,21 @@ data class PrayerTimes(
         fajr < sunrise && sunrise < dhuhr && dhuhr < asr && asr < maghrib && maghrib < isha
 }
 
-/** Ovozli xabar matnlari (talab bo'yicha aynan shu so'zlar). */
+/**
+ * Ovozli xabar matnlari.
+ * [gentle] = false: dastlabki talab bo'yicha qisqa matnlar ("Peshin vaqti bo'ldi, kechiktirmang.").
+ * [gentle] = true (standart): muloyim, yumshoq ohangdagi matnlar.
+ */
 object PrayerTexts {
     fun isFridayMale(prayer: Prayer, date: LocalDate, gender: Gender): Boolean =
         prayer == Prayer.DHUHR && date.dayOfWeek == DayOfWeek.FRIDAY && gender == Gender.MALE
 
-    fun mainText(prayer: Prayer, date: LocalDate, gender: Gender): String = when {
+    fun mainText(prayer: Prayer, date: LocalDate, gender: Gender, gentle: Boolean = false): String = when {
+        gentle -> when {
+            isFridayMale(prayer, date, gender) -> "Juma muborak bo'lsin. Juma vaqti kirdi, marhamat."
+            prayer == Prayer.FAJR -> "Assalomu alaykum. Bomdod vaqti kirdi. Marhamat, namozga turing."
+            else -> "${prayer.title} vaqti kirdi. Marhamat, namozingizni o'qib oling."
+        }
         isFridayMale(prayer, date, gender) -> "Juma vaqti bo'ldi."
         prayer == Prayer.FAJR -> "Bomdod vaqti bo'ldi. Namozga turing."
         else -> "${prayer.title} vaqti bo'ldi, kechiktirmang."
@@ -74,7 +83,12 @@ object PrayerTexts {
      * [index] 1 dan [total] gacha. Oxirgisi doim "oxirgi eslatma".
      * Standart 3 ta: unutmang -> hali belgilanmagan -> oxirgi eslatma.
      */
-    fun followupText(prayer: Prayer, index: Int, total: Int): String = when {
+    fun followupText(prayer: Prayer, index: Int, total: Int, gentle: Boolean = false): String = when {
+        gentle -> when {
+            index >= total -> "${prayer.title} namozi uchun oxirgi eslatma. Marhamat, vaqtida o'qib oling."
+            index % 2 == 1 -> "${prayer.title} namozini o'qishni unutmang, iltimos."
+            else -> "${prayer.title} namozi hali belgilanmagan. Vaqtingiz bo'lsa, o'qib oling."
+        }
         index >= total -> "${prayer.title} namozi uchun oxirgi eslatma."
         index % 2 == 1 -> "${prayer.title} namozini bajarishni unutmang."
         else -> "${prayer.title} namozi hali belgilanmagan. Eslatmani tekshiring."

@@ -93,6 +93,20 @@ class RemindersTest {
         assertTrue(today != tomorrow)
     }
 
+    @Test fun gentleTextsAreSoftAndStillNameThePrayer() {
+        val fri = LocalDate.of(2026, 10, 16); val mon = LocalDate.of(2026, 10, 12)
+        assertEquals("Assalomu alaykum. Bomdod vaqti kirdi. Marhamat, namozga turing.", PrayerTexts.mainText(Prayer.FAJR, mon, Gender.MALE, gentle = true))
+        assertEquals("Asr vaqti kirdi. Marhamat, namozingizni o'qib oling.", PrayerTexts.mainText(Prayer.ASR, mon, Gender.FEMALE, gentle = true))
+        assertEquals("Juma muborak bo'lsin. Juma vaqti kirdi, marhamat.", PrayerTexts.mainText(Prayer.DHUHR, fri, Gender.MALE, gentle = true))
+        assertEquals("Peshin vaqti kirdi. Marhamat, namozingizni o'qib oling.", PrayerTexts.mainText(Prayer.DHUHR, fri, Gender.FEMALE, gentle = true))
+        for (p in Prayer.entries) for (i in 1..3) {
+            assertTrue(PrayerTexts.followupText(p, i, 3, gentle = true).startsWith(p.title), "$p $i")
+        }
+        assertEquals("Peshin namozi uchun oxirgi eslatma. Marhamat, vaqtida o'qib oling.", PrayerTexts.followupText(Prayer.DHUHR, 3, 3, gentle = true))
+        // Standart (qisqa) matnlar o'zgarmaydi
+        assertEquals("Peshin vaqti bo'ldi, kechiktirmang.", PrayerTexts.mainText(Prayer.DHUHR, mon, Gender.MALE))
+    }
+
     @Test fun textsMatchSpec() {
         val fri = LocalDate.of(2026, 10, 16); val mon = LocalDate.of(2026, 10, 12)
         assertEquals("Bomdod vaqti bo'ldi. Namozga turing.", PrayerTexts.mainText(Prayer.FAJR, mon, Gender.MALE))
