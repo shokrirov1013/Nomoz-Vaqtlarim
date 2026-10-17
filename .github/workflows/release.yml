@@ -60,11 +60,28 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: >
-          ./gradlew --no-daemon :app:assembleRelease
-          -PgithubRepo=${{ github.repository }}
-          -PappVersionName=${{ steps.ver.outputs.name }}
-          -PappVersionCode=${{ steps.ver.outputs.code }}
+        run: |
+          set +e
+          ./gradlew --no-daemon :app:assembleRelease \
+            -PgithubRepo=${{ github.repository }} \
+            -PappVersionName=${{ steps.ver.outputs.name }} \
+            -PappVersionCode=${{ steps.ver.outputs.code }} > "$RUNNER_TEMP/gradle.log" 2>&1
+          code=$?
+          tail -n 40 "$RUNNER_TEMP/gradle.log"
+          if [ $code -ne 0 ]; then
+            python3 - "$RUNNER_TEMP/gradle.log" <<'PY'
+          import re, sys
+          lines = open(sys.argv[1], errors="replace").read().splitlines()
+          keep = []
+          for i, l in enumerate(lines):
+              if re.search(r"What went wrong|^e: |error:|ERROR|Missing class|[Kk]eystore|FAILED|Execution failed", l):
+                  keep.extend(lines[i:i + 6])
+          msg = "\n".join(dict.fromkeys(keep))[:6000] or "\n".join(lines[-40:])
+          msg = msg.replace("%", "%25").replace("\r", "").replace("\n", "%0A")
+          print("::error title=Gradle xatosi::" + msg)
+          PY
+          fi
+          exit $code
 
       - name: APK imzosini tekshirish
         run: |
