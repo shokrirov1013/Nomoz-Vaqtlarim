@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ovoz paketi fayllari dasturda nomi bo'yicha (getIdentifier) topiladi; resurs qisqartirgichi ularni o'chirmasin. -->
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/v_*,@raw/ting" />
