@@ -5,7 +5,7 @@
 set -euo pipefail
 
 OWNER="${1:?GitHub login kerak: scripts/publish-to-github.sh <login> [repo] [signing-papka]}"
-REPO="${2:-namoz-vaqtlarim}"
+REPO="${2:-Nomoz-Vaqtlarim}"
 SIGNING="${3:-$(cd "$(dirname "$0")/.." && pwd)/signing}"
 FULL="$OWNER/$REPO"
 

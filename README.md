@@ -78,7 +78,7 @@ Skript: repository yaratadi → imzolash kalitini **Secrets**ga joylaydi → `ma
 
 ### 2-usul — qo'lda
 
-1. GitHub'da `namoz-vaqtlarim` nomli repository yarating va kodni push qiling.
+1. GitHub'da `Nomoz-Vaqtlarim` nomli repository yarating va kodni push qiling.
 2. Settings → Secrets and variables → Actions ga 4 ta secret qo'shing: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` (qiymatlar `signing/` papkasida).
 3. `git tag v1.0.0 && git push origin v1.0.0`.
 
