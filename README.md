@@ -116,3 +116,7 @@ scripts/publish-to-github.sh
 - Ilova namoz o'qilganini **avtomatik bilmaydi**; faqat foydalanuvchi bosgan “Bajarildi” saqlanadi.
 - “Liquid Glass” — shaffof qatlam, nozik chegara va yorug'lik aksi bilan taqlid qilingan; Android'da orqa fonni haqiqiy blur qilish cheklangan.
 - Hijriy sana Um al-Qura hisobiga asoslangan; O'zbekistonda e'lon qilingan sanadan farq qilsa, Sozlamalardan ±1–2 kunga moslang.
+
+## Muallif
+
+Shokirov tomonidan yaratilgan. 18 yoshli talaba ishlab chiqqan — o'z istaklari yo'lida qilgan ilova.

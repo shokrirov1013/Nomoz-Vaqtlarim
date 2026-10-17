@@ -215,6 +215,14 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
             GlassButton("Yangilanish sahifasi", { go(Screen.UPDATE) }, small = true, filled = false)
             Text("Dizayn: Oq-Pushti-Siyohrang Liquid Glass (doimiy).", style = Type.Caption, modifier = Modifier.padding(top = 8.dp))
         }
+
+        // ---------------------------------------------------------------- ilova haqida
+        Text(
+            "Shokirov tomonidan yaratilgan. 18 yoshli talaba ishlab chiqqan — o'z istaklari yo'lida qilgan ilova.",
+            style = Type.Caption.copy(fontSize = 12.sp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
+        )
         Box(Modifier.height(96.dp))
     }
 
