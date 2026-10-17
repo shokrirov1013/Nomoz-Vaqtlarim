@@ -1,6 +1,6 @@
 package uz.namozvaqti.pro.ui
 
-/** Bitta oyat (yoki oyat qismi): arabcha matn va lotincha o'qilishi. */
+/** Bitta oyat (yoki oyat qismi): arabcha matn va o'qilishi (rasmiy kirill; lotin ko'rinishi avtomatik hosil qilinadi). */
 data class Verse(val arabic: String, val translit: String)
 
 data class Surah(
@@ -14,107 +14,96 @@ data class Surah(
 )
 
 /**
- * Qisqa suralar va Oyatal Kursi. Matn Madina mushafi imlosida. Ma'nolar qisqa va tushunarli qilib berilgan —
- * to'liq tafsir emas. Iltimos, o'qishdan oldin ishonchli mushaf bilan solishtiring.
+ * Suralar va Oyatal Kursi — O'zbekiston Musulmonlari idorasi rasmiy sayti (muslim.uz) matnidan olingan:
+ * arabcha matn, o'qilishi va ma'nosi aynan sayt tasdig'idagi kirill matn. Lotin ko'rinishi kirilldan
+ * avtomatik o'giriladi ([uz.namozvaqti.core.UzbekScript]); tanlangan yozuvga qarab ko'rsatiladi.
  */
 object QuranData {
-    val basmala = Verse("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "Bismillahir rohmanir rohiym")
+    const val SOURCE_NOTE = "Matn manbasi: O'zbekiston Musulmonlari idorasi rasmiy sayti (muslim.uz)."
 
     val all: List<Surah> = listOf(
         Surah(
             id = "kursi",
-            title = "Oyatal Kursi",
+            title = "Курсий ояти (Оятул-Курсий)",
             arabicTitle = "آيَةُ الْكُرْسِيِّ",
             source = "Baqara surasi, 255-oyat",
             verses = listOf(
-                Verse("اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", "Allohu laa ilaaha illaa huval hayyul qoyyum"),
-                Verse("لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ", "Laa ta'xuzuhu sinatun va laa nawm"),
-                Verse("لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ", "Lahu maa fis samaavaati va maa fil arz"),
-                Verse("مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ", "Man zallaziy yashfa'u 'indahu illaa bi iznih"),
-                Verse("يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ", "Ya'lamu maa bayna aydiyhim va maa xolfahum"),
-                Verse("وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ", "Va laa yuhiytuuna bishay'im min 'ilmihi illaa bimaa shaa'"),
-                Verse("وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ", "Vasi'a kursiyyuhus samaavaati val arz"),
-                Verse("وَلَا يَئُودُهُ حِفْظُهُمَا", "Va laa ya'uuduhu hifzuhumaa"),
-                Verse("وَهُوَ الْعَلِيُّ الْعَظِيمُ", "Va huval 'aliyyul 'aziym"),
+                Verse("اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", "Аллоҳу лаа илааҳа илла ҳувал Ҳаййул Қоййуум"),
+                Verse("لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ", "Лаа таъхузуҳу синатув ва лаа навм"),
+                Verse("لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ", "Лаҳуу маа фис-самааваати ва маа фил ард"),
+                Verse("مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ", "Ман-заллазии йашфаъу ъиндаҳу иллаа би-изниҳ"),
+                Verse("يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ", "Йаъламу маа байна айдийҳим ва маа холфаҳум"),
+                Verse("وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ", "Ва лаа йуҳитууна бишайъим-мин ъилмиҳии иллаа бима шаа-а"),
+                Verse("وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ", "Васиъа курсийюуҳус-самааваати вал-ард"),
+                Verse("وَلَا يَئُودُهُ حِفْظُهُمَا", "Ва лаа йаудуҳу ҳифзуҳумаа"),
+                Verse("وَهُوَ الْعَلِيُّ الْعَظِيمُ ﴿٢٥٥﴾", "Ва ҳувал ъалиййул ъазийм"),
             ),
-            meaning = "Alloh — Undan o'zga iloh yo'q, Tirik va Qayyum zotdir. Uni mudroq ham, uyqu ham tutmaydi. " +
-                "Osmonlardagi va yerdagi hamma narsa Unikidir. Uning izni bilan bo'lmasa, huzurida kim ham shafoat qila oladi? " +
-                "U bandalarning oldidagi va ortidagi narsalarni biladi. Ular Uning ilmidan, U xohlagan miqdoridan boshqasini qamrab ola olmaydilar. " +
-                "Uning Kursiysi osmonlar va yerni qamrab olgan. Ularni asrash Unga og'irlik qilmaydi. U Oliy va Ulug' zotdir.",
+            meaning = "Аллоҳ – Ундан ўзга илоҳ йўқ. У Ҳайй ва Қаййумдир. Уни мудроқ ҳам, уйқу ҳам олмас. Осмонлару ердаги нарсалар Уникидир. Унинг ҳузурида Ўзининг изнисиз ҳеч ким шафоат қила олмас. Уларнинг олдиларидаги нарсани ҳам, ортларидаги нарсани ҳам билур. Унинг илмидан Ўзи хоҳлаганидан бошқа ҳеч нарсани иҳота қила олмаслар. Унинг Курсиси осмонлару ерни қамраган. Уларни муҳофаза қилиш унга оғир келмас. Ва У Алий ва Азиймдир.",
             tip = "Har farz namozdan keyin va uxlashdan oldin o'qish tavsiya etiladi.",
         ),
         Surah(
             id = "fotiha",
-            title = "Fotiha surasi",
+            title = "Фотиҳа сураси",
             arabicTitle = "سُورَةُ الْفَاتِحَةِ",
             source = "1-sura, 7 oyat",
             verses = listOf(
-                QuranData.basmala,
-                Verse("الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "Alhamdu lillaahi robbil 'aalamiyn"),
-                Verse("الرَّحْمَٰنِ الرَّحِيمِ", "Ar-rohmaanir rohiym"),
-                Verse("مَالِكِ يَوْمِ الدِّينِ", "Maaliki yavmid diyn"),
-                Verse("إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", "Iyyaaka na'budu va iyyaaka nasta'iyn"),
-                Verse("اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", "Ihdinas sirootol mustaqiym"),
-                Verse(
-                    "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
-                    "Sirootollaziyna an'amta 'alayhim, gayril mag'zuubi 'alayhim va lad-doolliyn",
-                ),
+                Verse("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "Бисмиллаҳир роҳмаанир роҳийм"),
+                Verse("الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "Алҳамдулиллаҳи роббил ъааламийн"),
+                Verse("الرَّحْمَٰنِ الرَّحِيمِ", "Ар-роҳмаанир роҳийм"),
+                Verse("مَالِكِ يَوْمِ الدِّينِ", "Маалики явмиддийн"),
+                Verse("إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", "Иййаака наъбуду ва иййаака настаъийн"),
+                Verse("اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", "Иҳдинас-сироотол мустақийм"),
+                Verse("صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ", "Сироотол-лазийна анъамта ъалайҳим ғойрил мағзууби ъалайҳим валаззоллийн"),
             ),
-            meaning = "Mehribon va rahmli Alloh nomi bilan. Hamd olamlarning Robbi Allohga xosdir. U mehribon va rahmlidir, " +
-                "Qiyomat kunining egasidir. Yolg'iz Senga ibodat qilamiz va yolg'iz Sendan yordam so'raymiz. " +
-                "Bizni to'g'ri yo'lga hidoyat qil — ne'mat bergan zotlaringning yo'liga, g'azabga uchraganlar va adashganlarning yo'liga emas.",
+            meaning = "1. Ҳамд оламларнинг Робби – Аллоҳгадир. 2. У Роҳман ва Роҳиймдир.. 3. Жазо-мукофот кунининг эгасидир. 4. Фақат Сенгагина ибодат қиламиз ва фақат Сендангина ёрдам сўраймиз. 5. Бизни тўғри йўлга ҳидоят қилгин. 6-7. Ўзинг неъмат берганларнинг йўлига: ғазабга қолганларникига ҳам эмас, адашганларникига ҳам эмас.",
             tip = "Har rakatda o'qiladi; namozning asosiy suralaridan.",
         ),
         Surah(
             id = "ixlos",
-            title = "Ixlos surasi",
+            title = "Ихлос сураси",
             arabicTitle = "سُورَةُ الْإِخْلَاصِ",
             source = "112-sura, 4 oyat",
             verses = listOf(
-                QuranData.basmala,
-                Verse("قُلْ هُوَ اللَّهُ أَحَدٌ", "Qul huvallohu ahad"),
-                Verse("اللَّهُ الصَّمَدُ", "Allohus samad"),
-                Verse("لَمْ يَلِدْ وَلَمْ يُولَدْ", "Lam yalid va lam yuulad"),
-                Verse("وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ", "Va lam yakun lahuu kufuvan ahad"),
+                Verse("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "Бисмиллаҳир роҳмаанир роҳийм"),
+                Verse("قُلْ هُوَ اللَّهُ أَحَدٌ", "Қул ҳуваллоҳу аҳад"),
+                Verse("اللَّهُ الصَّمَدُ", "Аллоҳус-сомад"),
+                Verse("لَمْ يَلِدْ وَلَمْ يُولَدْ", "Лам йалид ва лам йулад"),
+                Verse("وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ", "Ва лам якуллаҳу куфуван аҳад"),
             ),
-            meaning = "Ayt: «U — Alloh, yagonadir. Alloh behojatdir (hamma Unga muhtoj, U hech kimga muhtoj emas). " +
-                "U tug'magan va tug'ilmagan. Va Unga hech kim teng emas.»",
+            meaning = "1. Айт: «У Аллоҳ ягонадир. 2. Аллоҳ – сомаддир. 3. У туғмаган ва туғилмаган. 4. Ва Унга ҳеч ким тенг бўлмаган».",
             tip = "Ertalab va kechqurun uch martadan o'qish tavsiya etiladi.",
         ),
         Surah(
             id = "falaq",
-            title = "Falaq surasi",
+            title = "Фалақ сураси",
             arabicTitle = "سُورَةُ الْفَلَقِ",
             source = "113-sura, 5 oyat",
             verses = listOf(
-                QuranData.basmala,
-                Verse("قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", "Qul a'uuzu birobbil falaq"),
-                Verse("مِنْ شَرِّ مَا خَلَقَ", "Min sharri maa xolaq"),
-                Verse("وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ", "Va min sharri g'oosiqin izaa vaqob"),
-                Verse("وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ", "Va min sharrin naffaasaati fil 'uqod"),
-                Verse("وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ", "Va min sharri haasidin izaa hasad"),
+                Verse("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "Бисмиллаҳир роҳмаанир роҳийм"),
+                Verse("قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", "Қул аъуузу бироббил фалақ"),
+                Verse("مِن شَرِّ مَا خَلَقَ", "Мин шарри маа холақ"),
+                Verse("وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ", "Ва мин шарри ғоосиқин изаа вақоб"),
+                Verse("وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ", "Ва мин шаррин наффасаати фил ъуқоди"),
+                Verse("وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ", "Ва мин шарри ҳаасидин изаа ҳасад"),
             ),
-            meaning = "Ayt: «Tong Robbidan panoh so'rayman — U yaratgan narsalarning yomonligidan, qorong'i bosganda tunning yomonligidan, " +
-                "tugunlarga puflovchilarning yomonligidan va hasad qilgan chog'ida hasadgo'yning yomonligidan.»",
+            meaning = "1. «Тонг Роббисидан паноҳ сўрайман. 2. У яратган нарсалар ёмонлигидан. 3. Ва кириб келган қоронғу кечанинг ёмонлигидан. 4. Ва тугунларга дам солувчилар ёмонлигидан. 5. Ва ҳасад қилган ҳасадчининг ёмонлигидан», деб айт.",
             tip = "Ertalab va kechqurun uch martadan o'qish tavsiya etiladi.",
         ),
         Surah(
             id = "nos",
-            title = "Nos surasi",
+            title = "Ан-Нас сураси",
             arabicTitle = "سُورَةُ النَّاسِ",
             source = "114-sura, 6 oyat",
             verses = listOf(
-                QuranData.basmala,
-                Verse("قُلْ أَعُوذُ بِرَبِّ النَّاسِ", "Qul a'uuzu birobbin naas"),
-                Verse("مَلِكِ النَّاسِ", "Malikin naas"),
-                Verse("إِلَٰهِ النَّاسِ", "Ilaahin naas"),
-                Verse("مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", "Min sharril vasvaasil xonnaas"),
-                Verse("الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", "Allaziy yuvasvisu fiy suduurin naas"),
-                Verse("مِنَ الْجِنَّةِ وَالنَّاسِ", "Minal jinnati van naas"),
+                Verse("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "Бисмиллаҳир роҳмаанир роҳийм"),
+                Verse("قُلْ أَعُوذُ بِرَبِّ النَّاسِ", "Қул аъуузу бирробин-наас"),
+                Verse("مَلِكِ النَّاسِ", "Маликин-наас"),
+                Verse("إِلَٰهِ النَّاسِ", "Илааҳин-наас"),
+                Verse("مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", "Мин шаррил-васваасил хоннаас"),
+                Verse("الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", "Аллазии йувасвису фии судуурин-наас"),
+                Verse("مِنَ الْجِنَّةِ وَالنَّاسِ", "Минал жиннати ван-наас"),
             ),
-            meaning = "Ayt: «Odamlarning Robbidan, odamlarning Podshohidan, odamlarning Ilohidan panoh so'rayman — " +
-                "odamlarning ko'ksiga vasvasa soladigan, (Allohni eslanganda) yashirinib oladigan vasvasachining yomonligidan — " +
-                "jinlardan ham, odamlardan ham.»",
+            meaning = "1. Одамлар Роббисидан... 2. Одамлар подшоҳидан... 3. Одамлар Илоҳидан паноҳ сўрайман... 4. Беркиниб, кўриниб турувчи васвасачининг... 5. Одамлар кўксларида васваса соладиганнинг... 6. Жинлар ва одамлардан бўлганнинг ёмонлигидан», деб айт.",
             tip = "Ertalab va kechqurun uch martadan o'qish tavsiya etiladi.",
         ),
     )

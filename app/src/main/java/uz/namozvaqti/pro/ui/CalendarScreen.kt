@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -79,7 +78,7 @@ fun CalendarScreen(vm: AppViewModel) {
     val notesByDate = notes.groupBy { it.date }
 
     Column(
-        Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+        Modifier.verticalScroll(rememberScrollState(), flingBehavior = SoftFling).padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Taqvim", style = Type.H1, modifier = Modifier.padding(top = 4.dp))

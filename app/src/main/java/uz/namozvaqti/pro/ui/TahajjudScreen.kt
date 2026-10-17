@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,7 +52,7 @@ fun TahajjudScreen(vm: AppViewModel) {
         TahajjudRules.nextOccurrence(LocalDateTime.now(), enabledDays.associate { it.dayOfWeek to LocalTime.of(it.hour, it.minute) }) else null
 
     Column(
-        Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+        Modifier.verticalScroll(rememberScrollState(), flingBehavior = SoftFling).padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Tahajjud", style = Type.H1, modifier = Modifier.padding(top = 4.dp))

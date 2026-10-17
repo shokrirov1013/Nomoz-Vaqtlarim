@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -77,7 +76,7 @@ fun HomeScreen(vm: AppViewModel, go: (Screen) -> Unit) {
     }
 
     Column(
-        Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+        Modifier.verticalScroll(rememberScrollState(), flingBehavior = SoftFling).padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Box(Modifier.height(4.dp))
@@ -144,7 +143,11 @@ fun HomeScreen(vm: AppViewModel, go: (Screen) -> Unit) {
                 val dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneId.systemDefault())
                 " · yangilandi ${Fmt.time(dt.toLocalTime())}, ${dt.dayOfMonth}.${"%02d".format(dt.monthValue)}"
             } ?: ""
-            Text("Manba: ${it.source}$updated", style = Type.Caption, modifier = Modifier.padding(horizontal = 4.dp))
+            Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("Manba: ${it.source}$updated", style = Type.Caption, modifier = Modifier.weight(1f))
+                val refreshing by vm.refreshing.collectAsState()
+                GlassButton(if (refreshing) "Yangilanmoqda…" else "Yangilash", { vm.refreshTimes() }, small = true, filled = false, enabled = !refreshing)
+            }
         }
 
         // ---- tezkor kirish

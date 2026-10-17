@@ -56,8 +56,8 @@ class SpeechService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val n = NotificationCompat.Builder(this, Notifications.CH_PLAYBACK)
             .setSmallIcon(R.drawable.ic_stat_namoz)
-            .setContentTitle("Namoz eslatmasi")
-            .setContentText("Ovozli xabar ijro etilmoqda")
+            .setContentTitle(UzText.of(this, "Namoz eslatmasi"))
+            .setContentText(UzText.of(this, "Ovozli xabar ijro etilmoqda"))
             .setOngoing(true)
             .setSilent(true)
             .build()

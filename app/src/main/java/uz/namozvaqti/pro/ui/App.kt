@@ -1,8 +1,15 @@
 package uz.namozvaqti.pro.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,8 +66,19 @@ fun App(vm: AppViewModel) {
     }
 
     Box(Modifier.fillMaxSize().imePadding()) {
-        // Qisqa va yengil "crossfade": oynadan oynaga o'tishda qotish yo'q.
-        Crossfade(targetState = screen, animationSpec = tween(140), label = "screen", modifier = Modifier.fillMaxSize()) { target ->
+        // Yumshoq, prujinali o'tish: yangi sahifa yon tomondan sekin suzib kiradi, eskisi so'nadi.
+        // Faqat siljitish va shaffoflik (graphicsLayer) o'zgaradi — qayta o'lchash yo'q, shuning uchun silliq.
+        AnimatedContent(
+            targetState = screen,
+            transitionSpec = {
+                val dir = if (targetState.ordinal >= initialState.ordinal) 1 else -1
+                (slideInHorizontally(spring(dampingRatio = 0.86f, stiffness = 420f)) { dir * (it / 6) } +
+                    fadeIn(tween(240, delayMillis = 50))) togetherWith
+                    (slideOutHorizontally(tween(200, easing = FastOutSlowInEasing)) { -dir * (it / 10) } + fadeOut(tween(140)))
+            },
+            label = "screen",
+            modifier = Modifier.fillMaxSize(),
+        ) { target ->
             Column(Modifier.fillMaxSize().statusBarsPadding()) {
                 when (target) {
                     Screen.HOME -> HomeScreen(vm) { screen = it }

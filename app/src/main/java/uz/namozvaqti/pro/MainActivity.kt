@@ -7,7 +7,13 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModelProvider
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import uz.namozvaqti.pro.ui.App
+import uz.namozvaqti.pro.ui.LocalCyrillic
 import uz.namozvaqti.pro.ui.GlassBackground
 import uz.namozvaqti.pro.ui.NamozTheme
 
@@ -23,8 +29,15 @@ class MainActivity : ComponentActivity() {
         vm = ViewModelProvider(this)[AppViewModel::class.java]
         if (vm.settings.value.onboardingDone) vm.onAppStart()
         setContent {
-            NamozTheme {
-                GlassBackground { App(vm) }
+            val s by vm.settings.collectAsState()
+            val base = LocalDensity.current
+            CompositionLocalProvider(
+                LocalCyrillic provides s.cyrillic,
+                LocalDensity provides Density(base.density, base.fontScale * (if (s.bigText) 1.2f else 1f)),
+            ) {
+                NamozTheme {
+                    GlassBackground { App(vm) }
+                }
             }
         }
     }

@@ -14,6 +14,12 @@ import uz.namozvaqti.core.ReminderKind
 import uz.namozvaqti.pro.MainActivity
 import uz.namozvaqti.pro.R
 
+/** Bildirishnoma matnlari ham foydalanuvchi tanlagan yozuvda (lotin/kirill) chiqadi. */
+object UzText {
+    fun of(ctx: Context, text: String): String =
+        uz.namozvaqti.core.UzbekScript.display(text, uz.namozvaqti.pro.ServiceLocator.get(ctx).settings.value.cyrillic)
+}
+
 object Notifications {
     const val CH_REMINDER = "reminders_v2"
     const val CH_PLAYBACK = "playback"
@@ -81,9 +87,9 @@ object Notifications {
         }
         val b = NotificationCompat.Builder(ctx, if (systemSound) CH_REMINDER_SOUND else CH_REMINDER)
             .setSmallIcon(R.drawable.ic_stat_namoz)
-            .setContentTitle(title)
-            .setContentText(text)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setContentTitle(UzText.of(ctx, title))
+            .setContentText(UzText.of(ctx, text))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(UzText.of(ctx, text)))
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -93,7 +99,7 @@ object Notifications {
             val done = Intent(ctx, ActionReceiver::class.java).setAction(Act.MARK_DONE)
                 .putExtra(Extra.DATE, event.date.toString()).putExtra(Extra.PRAYER, event.prayer.key)
             b.addAction(
-                0, "Bajarildi",
+                0, UzText.of(ctx, "Bajarildi"),
                 PendingIntent.getBroadcast(
                     ctx, ReminderEvent.requestCode(event.date, event.prayer, 9), done,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
@@ -110,8 +116,8 @@ object Notifications {
         val full = PendingIntentFactory.alarmScreen(ctx, kind)
         val n = NotificationCompat.Builder(ctx, CH_ALARM_SOUND)
             .setSmallIcon(R.drawable.ic_stat_namoz)
-            .setContentTitle(kind.title)
-            .setContentText(text)
+            .setContentTitle(UzText.of(ctx, kind.title))
+            .setContentText(UzText.of(ctx, text))
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

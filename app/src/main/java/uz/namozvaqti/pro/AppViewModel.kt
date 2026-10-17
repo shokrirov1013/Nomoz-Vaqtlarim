@@ -73,6 +73,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.Eagerly, LocalDate.now())
 
     private val refreshTick = MutableStateFlow(0)
+    private val _refreshing = MutableStateFlow(false)
+    val refreshing: StateFlow<Boolean> = _refreshing
 
     private val timesKey = combine(today, settings, refreshTick) { d, s, t ->
         Triple(d, listOf(s.lat, s.lon, s.method, s.hanafiAsr), t)
@@ -124,10 +126,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     /** Joylashuv yoki hisoblash usuli o'zgarganda: vaqtlarni qayta olib, eslatmalarni yangilaydi. */
     fun refreshTimes() {
         viewModelScope.launch(Dispatchers.IO) {
-            refreshTick.value++
-            sl.times.refresh()
-            refreshTick.value++
-            Scheduler.rescheduleAll(ctx)
+            _refreshing.value = true
+            try {
+                refreshTick.value++
+                sl.times.refresh()
+                refreshTick.value++
+                Scheduler.rescheduleAll(ctx)
+            } finally {
+                _refreshing.value = false
+            }
         }
     }
 

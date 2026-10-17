@@ -21,6 +21,7 @@ import uz.namozvaqti.pro.BuildConfig
 import uz.namozvaqti.pro.R
 import uz.namozvaqti.pro.ServiceLocator
 import uz.namozvaqti.pro.alarm.Notifications
+import uz.namozvaqti.pro.alarm.UzText
 import uz.namozvaqti.pro.data.Http
 import java.io.File
 import java.security.MessageDigest
@@ -184,8 +185,8 @@ class UpdateWorker(private val ctx: Context, params: WorkerParameters) : Corouti
             val text = if (ready) "Versiya ${r.version} yuklab olindi. O'rnatish uchun bosing." else "Versiya ${r.version} mavjud. Yuklab olish uchun bosing."
             val n = NotificationCompat.Builder(ctx, Notifications.CH_UPDATE)
                 .setSmallIcon(R.drawable.ic_stat_namoz)
-                .setContentTitle("Namoz Vaqtlarim — yangilanish")
-                .setContentText(text)
+                .setContentTitle(UzText.of(ctx, "Namoz Vaqtlarim — yangilanish"))
+                .setContentText(UzText.of(ctx, text))
                 .setAutoCancel(true)
                 .setContentIntent(Notifications.openAppIntent(ctx, 77))
                 .build()

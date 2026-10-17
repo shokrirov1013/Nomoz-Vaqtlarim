@@ -23,7 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
+import uz.namozvaqti.pro.ui.Text
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,6 +59,8 @@ class AlarmActivity : ComponentActivity() {
         val app = applicationContext
 
         setContent {
+            val cyr = ServiceLocator.get(app).settings.value.cyrillic
+            androidx.compose.runtime.CompositionLocalProvider(uz.namozvaqti.pro.ui.LocalCyrillic provides cyr) {
             NamozTheme {
                 GlassBackground {
                     val active by RingState.active.collectAsState()
@@ -99,6 +101,7 @@ class AlarmActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
             }
         }
     }

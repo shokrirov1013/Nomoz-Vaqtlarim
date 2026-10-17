@@ -20,8 +20,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +50,7 @@ fun OnboardingScreen(vm: AppViewModel) {
     var locMsg by remember { mutableStateOf<String?>(null) }
     var locationDone by rememberSaveable { mutableStateOf(false) }
     val resume = rememberResumeTick()
+    val s by vm.settings.collectAsState()
 
     val gpsLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
         if (granted.values.any { it }) {
@@ -78,6 +79,11 @@ fun OnboardingScreen(vm: AppViewModel) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             when (step) {
                 0 -> GlassCard(Modifier.fillMaxWidth()) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        GlassChip("O'zbekcha (Lotin)", !s.cyrillic, { vm.updateSettings(false) { it.copy(script = "latin") } }, raw = true)
+                        GlassChip("Ўзбекча (Кирилл)", s.cyrillic, { vm.updateSettings(false) { it.copy(script = "cyrillic") } }, raw = true)
+                    }
+                    Box(Modifier.height(12.dp))
                     Text("Assalomu alaykum!", style = Type.H2)
                     Text("Sizga mos eslatmalar uchun ozgina ma'lumot kerak. Boshqa shaxsiy ma'lumot yig'ilmaydi.", style = Type.Caption)
                     OutlinedTextField(

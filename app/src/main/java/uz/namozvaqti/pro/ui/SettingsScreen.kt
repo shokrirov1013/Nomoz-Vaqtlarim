@@ -20,7 +20,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,11 +66,25 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
 
     LazyColumn(
         Modifier.padding(horizontal = 16.dp),
+        flingBehavior = SoftFling,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
             Text("Sozlamalar", style = Type.H1, modifier = Modifier.padding(top = 4.dp))
 
+        }
+        item {
+            GlassCard(Modifier.fillMaxWidth()) {
+                Text("Til va yozuv", style = Type.H2)
+                Text("Ilovadagi hamma matn, suralar va bildirishnomalar tanlangan yozuvda chiqadi.", style = Type.Caption)
+                Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    GlassChip("O'zbekcha (Lotin)", s.script == "latin", { vm.updateSettings(false) { it.copy(script = "latin") } }, raw = true)
+                    GlassChip("Ўзбекча (Кирилл)", s.script == "cyrillic", { vm.updateSettings(false) { it.copy(script = "cyrillic") } }, raw = true)
+                }
+                SwitchRow("Katta matn", "Kattalar uchun harflar kattaroq bo'ladi", s.bigText) { on ->
+                    vm.updateSettings(false) { it.copy(bigText = on) }
+                }
+            }
         }
         item {
             GlassCard(Modifier.fillMaxWidth()) {
@@ -119,8 +132,9 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
                 }
                 StepperRow("Hijriy sanani moslash", s.hijriAdjust, " kun", -2, 2) { v -> vm.updateSettings(false) { it.copy(hijriAdjust = v) } }
                 Text(
-                    "Vaqtlar islom.uz jadvalidan (eng yaqin shahar + joylashuvingizga moslab) olinadi. Bu faqat “O'zbekiston” usuli va Hanafiy Asr " +
-                        "tanlanganda ishlaydi; boshqa holatda Aladhan yoki qurilmada hisoblash ishlatiladi.",
+                    "“O'zbekiston” usuli va Hanafiy Asr tanlanganda vaqtlar joylashuvingiz uchun aniq hisoblanadi va O'zbekiston Musulmonlari idorasi " +
+                        "(muslim.uz) rasmiy vaqtlariga moslanadi; har kuni sayt bilan sinxronlanadi. islom.uz xizmati ishlasa, undan olinadi. " +
+                        "Internet bo'lmasa, oxirgi moslama bilan hisoblanadi. Boshqa usullarda Aladhan yoki qurilmadagi hisob ishlatiladi.",
                     style = Type.Caption, modifier = Modifier.padding(top = 6.dp),
                 )
             }

@@ -3,7 +3,6 @@ package uz.namozvaqti.pro.ui
 import android.content.Context
 import android.media.RingtoneManager
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

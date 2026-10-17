@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,12 +28,13 @@ fun QuranScreen() {
     var openId by rememberSaveable { mutableStateOf<String?>(null) }
     LazyColumn(
         Modifier.padding(horizontal = 16.dp),
+        flingBehavior = SoftFling,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "title") {
             Column(Modifier.padding(top = 4.dp)) {
                 Text("Suralar", style = Type.H1)
-                Text("Oyatal Kursi va qisqa suralar. Kartani bosing.", style = Type.Caption)
+                Text("Oyatal Kursi, Fotiha, Ixlos, Falaq va Nos. Kartani bosing.", style = Type.Caption)
             }
         }
         items(QuranData.all, key = { it.id }) { surah ->
@@ -42,7 +42,7 @@ fun QuranScreen() {
         }
         item(key = "note") {
             Text(
-                "Matnni ishonchli mushaf bilan solishtirib o'qing. Ma'nolar qisqa tarjima, to'liq tafsir emas.",
+                QuranData.SOURCE_NOTE + " Ma'nolar qisqa tarjima.",
                 style = Type.Caption, modifier = Modifier.padding(horizontal = 4.dp),
             )
         }

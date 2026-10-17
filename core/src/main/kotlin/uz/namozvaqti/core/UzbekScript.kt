@@ -14,9 +14,53 @@ object UzbekScript {
     private val vowels = "aeiouoʻ"
     private val cache = HashMap<String, String>()
 
+    /**
+     * Tanlangan yozuvda ko'rsatish. Manba lotin ham, kirill ham bo'lishi mumkin (suralar matni rasmiy kirillda).
+     * [cyrillic] = true: lotin harflar kirillga o'giriladi; false: kirill harflar lotinga o'giriladi.
+     */
     fun display(text: String, cyrillic: Boolean): String {
-        if (!cyrillic || text.isEmpty()) return text
-        return cache.getOrPut(text) { latinToCyrillic(text) }.also { if (cache.size > 2000) cache.clear() }
+        if (text.isEmpty()) return text
+        val key = if (cyrillic) "c$text" else "l$text"
+        return cache.getOrPut(key) {
+            if (cyrillic) latinToCyrillic(text) else if (text.any { isCyrillic(it) }) cyrillicToLatin(text) else text
+        }.also { if (cache.size > 3000) cache.clear() }
+    }
+
+    private fun isCyrillic(c: Char) = c in '\u0400'..'\u04FF'
+
+    /** Kirill (o'zbek) -> lotin. Rasmiy kirill matnlardan (muslim.uz) lotin ko'rinish hosil qilish uchun. */
+    fun cyrillicToLatin(text: String): String {
+        val sb = StringBuilder(text.length + 16)
+        val lowerVowels = "аеёиоуўэюяы"
+        var i = 0
+        while (i < text.length) {
+            val ch = text[i]
+            if (!isCyrillic(ch)) { sb.append(ch); i++; continue }
+            val lo = ch.lowercaseChar()
+            val up = ch.isUpperCase()
+            val prev = if (i > 0) text[i - 1] else ' '
+            val next = if (i + 1 < text.length) text[i + 1] else ' '
+            val wordUpper = up && (next.isUpperCase() || (prev.isUpperCase() && isCyrillic(prev)))
+            fun out(s: String) {
+                sb.append(if (wordUpper) s.uppercase() else if (up) s.replaceFirstChar { it.uppercaseChar() } else s)
+            }
+            when (lo) {
+                'а' -> out("a"); 'б' -> out("b"); 'в' -> out("v"); 'г' -> out("g"); 'д' -> out("d")
+                'е' -> {
+                    val initial = !isCyrillic(prev) && !prev.isLetter() || prev.lowercaseChar() in lowerVowels || prev == 'ъ' || prev == 'ь'
+                    out(if (initial) "ye" else "e")
+                }
+                'ё' -> out("yo"); 'ж' -> out("j"); 'з' -> out("z"); 'и' -> out("i"); 'й' -> out("y")
+                'к' -> out("k"); 'л' -> out("l"); 'м' -> out("m"); 'н' -> out("n"); 'о' -> out("o"); 'п' -> out("p")
+                'р' -> out("r"); 'с' -> out("s"); 'т' -> out("t"); 'у' -> out("u"); 'ф' -> out("f"); 'х' -> out("x")
+                'ц' -> out("ts"); 'ч' -> out("ch"); 'ш' -> out("sh"); 'э' -> out("e"); 'ю' -> out("yu"); 'я' -> out("ya")
+                'ў' -> out("o'"); 'ғ' -> out("g'"); 'қ' -> out("q"); 'ҳ' -> out("h"); 'ъ' -> sb.append("'")
+                'ь' -> {}; 'ы' -> out("i")
+                else -> sb.append(ch)
+            }
+            i++
+        }
+        return sb.toString()
     }
 
     fun latinToCyrillic(text: String): String {

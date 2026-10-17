@@ -42,4 +42,21 @@ class UzbekScriptTest {
         assertEquals("Аллоҳу лаа илааҳа иллаа ҳувал ҳайюл қойюм", c("Allohu laa ilaaha illaa huval hayyul qoyyum"))
         assertEquals("Қул ҳуваллоҳу аҳад", c("Qul huvallohu ahad"))
     }
+
+    @Test fun cyrillicToLatin() {
+        fun l(s: String) = UzbekScript.cyrillicToLatin(s)
+        assertEquals("Bomdod", l("Бомдод")); assertEquals("O'zbekiston", l("Ўзбекистон")); assertEquals("Qul huvalloxu ahad".replace("x", "h"), l("Қул ҳуваллоҳу аҳад"))
+        assertEquals("Ixlos surasi", l("Ихлос сураси")); assertEquals("IXLOS SURASI", l("ИХЛОС СУРАСИ"))
+        assertEquals("Allohu laa ilaaha illa huval Hayyul Qoyyuum", l("Аллоҳу лаа илааҳа илла ҳувал Ҳаййул Қоййуум"))
+        assertEquals("Alhamdulillahi robbil 'aalamiyn", l("Алҳамдулиллаҳи роббил ъааламийн"))
+        assertEquals("yavmiddiyn", l("явмиддийн")); assertEquals("Eslatma", l("Эслатма")); assertEquals("yer", l("ер"))
+        assertEquals("Tong Robbisidan", l("Тонг Роббисидан"))
+    }
+
+    @Test fun displayWorksBothWays() {
+        assertEquals("Ихлос сураси", UzbekScript.display("Ихлос сураси", true))
+        assertEquals("Ixlos surasi", UzbekScript.display("Ихлос сураси", false))
+        assertEquals("Ixlos surasi", UzbekScript.display("Ixlos surasi", false))
+        assertEquals("Ихлос сураси", UzbekScript.display("Ixlos surasi", true))
+    }
 }

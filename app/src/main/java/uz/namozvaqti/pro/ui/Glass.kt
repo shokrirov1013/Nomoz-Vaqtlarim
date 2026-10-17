@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -242,14 +241,16 @@ fun GlassButton(
 
 /** Tanlanadigan "tabletka" (hafta kunlari, rejimlar). */
 @Composable
-fun GlassChip(text: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun GlassChip(text: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, raw: Boolean = false) {
     val shape = RoundedCornerShape(50)
     val base = if (selected) modifier.background(GoldBrush, shape) else modifier.glassSurface(shape)
     Box(
         base.clickableNoRipple(onClick).padding(horizontal = 14.dp, vertical = 9.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text, style = Type.BodyBold.copy(fontSize = 14.sp, color = if (selected) Glass.OnGold else Glass.GoldBright))
+        val st = Type.BodyBold.copy(fontSize = 14.sp, color = if (selected) Glass.OnGold else Glass.GoldBright)
+        // raw = true: yozuv tanlagichi — belgilangan yozuvga qaramay doim o'z harfida ko'rinadi
+        if (raw) androidx.compose.material3.Text(text, style = st) else Text(text, style = st)
     }
 }
 
