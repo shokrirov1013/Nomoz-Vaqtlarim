@@ -60,6 +60,7 @@ async function icon(name, color, size = 256) {
     cal: await icon("FaCalendarAlt", dark), book: await icon("FaBookOpen", dark), lang: await icon("FaLanguage", dark),
     clock: await icon("FaClock", dark), check: await icon("FaCheckCircle", dark), chart: await icon("FaChartBar", dark),
     heart: await icon("FaHeart", dark), github: await icon("FaGithub", "E3BC6A"),
+    lock: await icon("FaLock", dark), shield: await icon("FaShieldAlt", dark), sync: await icon("FaSyncAlt", dark),
   };
   const sh = () => ({ type: "outer", color: "000000", blur: 12, offset: 3, angle: 90, opacity: 0.3 });
 
@@ -180,7 +181,25 @@ async function icon(name, color, size = 256) {
   s.addImage({ path: `${ASSETS}/frame_reminder.jpg`, x: 9.9, y: 1.4, w: 3.04, h: 5.4, shadow: sh(), objectName: "kadr-eslatma", altText: "Yumshoq eslatma ekrani" });
   s.addNotes("Dizayn ilova ikonkasiga mos: qorong'i zumrad fon va oltin urg'u. Kattalar uchun kirill yozuvi va katta matn bor.");
 
-  // ===== 7. Yuklab olish
+  // ===== 7. Ishonch va xavfsizlik
+  pres.addSection({ title: "Ishonch" });
+  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Ishonch" });
+  s.addText("Ishonchli va xavfsiz", { placeholder: "title" });
+  const trust = [
+    ["lock", "Maxfiylik", "Faqat ism, jins va joylashuv so'raladi. Keraksiz shaxsiy ma'lumot yig'ilmaydi, tarix telefoningizda saqlanadi."],
+    ["shield", "Xavfsiz yangilanish", "Yangi versiya faqat sizning roziligingiz bilan o'rnatiladi va imzosi tekshiriladi."],
+    ["sync", "Internetsiz ham ishlaydi", "Saqlangan vaqtlar va telefondagi hisob bilan eslatmalar internet bo'lmaganda ham keladi."],
+  ];
+  trust.forEach(([k, h, b], i) => {
+    const x = 0.7 + i * 4.1;
+    card(s, x, 1.9, 3.7, 4.4, `ishonch-karta-${i + 1}`);
+    iconBadge(s, ic[k], x + 0.4, 2.3, 1.0, `ishonch-${i + 1}`);
+    s.addText(h, { x: x + 0.4, y: 3.6, w: 2.9, h: 0.6, fontSize: 22, bold: true, color: C.accent6, margin: 0, isTextBox: true, objectName: `ishonch-sarlavha-${i + 1}` });
+    s.addText(b, { x: x + 0.4, y: 4.3, w: 2.9, h: 1.8, fontSize: 16, color: C.background2, valign: "top", margin: 0, isTextBox: true, objectName: `ishonch-matn-${i + 1}` });
+  });
+  s.addNotes("Ilova serverga hech narsa yubormaydi: ma'lumotlar telefoningizda. Yangilanish — faqat sizning ruxsatingiz bilan, imzosi tekshirilgandan keyin.");
+
+  // ===== 8. Yuklab olish
   pres.addSection({ title: "Yakun" });
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Yakun" });
   s.addText("Yuklab oling", { placeholder: "title" });
