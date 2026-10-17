@@ -19,6 +19,9 @@ object Notifications {
     const val CH_PLAYBACK = "playback"
     const val CH_ALARM = "alarm"
     const val CH_UPDATE = "update"
+    // Zaxira kanallar: foreground xizmat boshlanmasa, tizimning o'z ovozi chaladi.
+    const val CH_REMINDER_SOUND = "reminders_sound"
+    const val CH_ALARM_SOUND = "alarm_sound"
 
     const val ID_PLAYBACK = 900
     const val ID_RING = 901
@@ -45,6 +48,19 @@ object Notifications {
             setSound(null, null)
             enableVibration(false)
         })
+        nm.createNotificationChannel(NotificationChannel(CH_REMINDER_SOUND, "Namoz eslatmalari (tizim ovozi)", NotificationManager.IMPORTANCE_HIGH).apply {
+            description = "Ovozli xabar ishlamasa, zaxira sifatida tizim ovozi chaladi"
+            enableVibration(true)
+        })
+        nm.createNotificationChannel(NotificationChannel(CH_ALARM_SOUND, "Budilnik (tizim ovozi)", NotificationManager.IMPORTANCE_HIGH).apply {
+            description = "Budilnik xizmati boshlanmasa, zaxira sifatida tizim budilnigi chaladi"
+            setSound(
+                android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_ALARM),
+                android.media.AudioAttributes.Builder().setUsage(android.media.AudioAttributes.USAGE_ALARM).build(),
+            )
+            enableVibration(true)
+            vibrationPattern = longArrayOf(0, 700, 500, 700, 500, 700)
+        })
         nm.createNotificationChannel(NotificationChannel(CH_UPDATE, "Yangilanishlar", NotificationManager.IMPORTANCE_DEFAULT).apply {
             description = "Ilovaning yangi versiyasi"
         })
@@ -56,13 +72,13 @@ object Notifications {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
 
-    fun postReminder(ctx: Context, event: ReminderEvent, text: String) {
+    fun postReminder(ctx: Context, event: ReminderEvent, text: String, systemSound: Boolean = false) {
         val title = when (event.kind) {
             ReminderKind.PRE -> "${event.prayer.title} — vaqt yaqinlashdi"
             ReminderKind.MAIN -> "${event.prayer.title} vaqti"
             ReminderKind.FOLLOWUP -> "${event.prayer.title} — eslatma"
         }
-        val b = NotificationCompat.Builder(ctx, CH_REMINDER)
+        val b = NotificationCompat.Builder(ctx, if (systemSound) CH_REMINDER_SOUND else CH_REMINDER)
             .setSmallIcon(R.drawable.ic_stat_namoz)
             .setContentTitle(title)
             .setContentText(text)
@@ -84,6 +100,24 @@ object Notifications {
             )
         }
         notify(ctx, reminderId(event.prayer), b.build())
+    }
+
+    /** Budilnik xizmatini boshlab bo'lmaganda: to'liq ekranli bildirishnoma + tizim budilnik ovozi. */
+    fun postRingFallback(ctx: Context, kind: RingKind) {
+        val text = if (kind == RingKind.FAJR) "Bomdod vaqti bo'ldi. Namozga turing." else "Tahajjud vaqti bo'ldi."
+        val full = PendingIntentFactory.alarmScreen(ctx, kind)
+        val n = NotificationCompat.Builder(ctx, CH_ALARM_SOUND)
+            .setSmallIcon(R.drawable.ic_stat_namoz)
+            .setContentTitle(kind.title)
+            .setContentText(text)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .setFullScreenIntent(full, true)
+            .setContentIntent(full)
+            .build()
+        notify(ctx, ID_RING, n)
     }
 
     fun notify(ctx: Context, id: Int, n: android.app.Notification) {

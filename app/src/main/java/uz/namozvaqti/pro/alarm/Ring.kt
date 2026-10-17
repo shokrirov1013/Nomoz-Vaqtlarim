@@ -155,6 +155,7 @@ class RingService : Service() {
                 )
             } catch (e: Exception) {
                 Log.w(TAG, "budilnik xizmatini boshlab bo'lmadi: ${e.message}")
+                Notifications.postRingFallback(ctx, kind)
             }
         }
     }

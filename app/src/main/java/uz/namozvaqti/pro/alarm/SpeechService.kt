@@ -194,14 +194,15 @@ class SpeechService : Service() {
         private const val TAG = "SpeechService"
 
         /** Ovozli xabarni navbatga qo'yadi. Foreground xizmat boshlanmasa, bildirishnoma o'zi qoladi. */
-        fun speak(ctx: Context, text: String) {
+        fun speak(ctx: Context, text: String): Boolean =
             try {
                 ContextCompat.startForegroundService(
                     ctx, Intent(ctx, SpeechService::class.java).putExtra(Extra.TEXT, text),
                 )
+                true
             } catch (e: Exception) {
                 Log.w(TAG, "xizmatni boshlab bo'lmadi: ${e.message}")
+                false
             }
-        }
     }
 }

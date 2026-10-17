@@ -74,7 +74,8 @@ class ReminderReceiver : BroadcastReceiver() {
             ReminderKind.FOLLOWUP -> PrayerTexts.followupText(prayer, event.followupIndex, s.policy.followups)
         }
         Notifications.postReminder(ctx, event, text)
-        SpeechService.speak(ctx, text)
+        // Ovoz xizmatini boshlab bo'lmasa, tizim ovozi bilan zaxira bildirishnoma.
+        if (!SpeechService.speak(ctx, text)) Notifications.postReminder(ctx, event, text, systemSound = true)
     }
 }
 
