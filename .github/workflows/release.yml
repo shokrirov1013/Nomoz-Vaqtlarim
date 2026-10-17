@@ -1,0 +1,80 @@
+name: Release
+
+# Yangi versiya chiqarish:  git tag v1.0.1 && git push origin v1.0.1
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Versiya tegi (masalan v1.0.1)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Versiyani aniqlash
+        id: ver
+        run: |
+          VERSION="${TAG#v}"
+          if ! [[ "$VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "Teg v<major>.<minor>.<patch> ko'rinishida bo'lishi kerak (masalan v1.0.1)"; exit 1
+          fi
+          # versionCode har doim oshib boradi: major*10000 + minor*100 + patch
+          CODE=$(( BASH_REMATCH[1] * 10000 + BASH_REMATCH[2] * 100 + BASH_REMATCH[3] ))
+          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+
+      - name: Imzolash kalitini tayyorlash (GitHub Secrets'dan)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::KEYSTORE_BASE64 secret topilmadi. README'dagi 'Imzolash kaliti' bo'limiga qarang."; exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Testlar
+        run: ./gradlew --no-daemon :core:test :app:testReleaseUnitTest -PgithubRepo=${{ github.repository }}
+
+      - name: Release APK yig'ish
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: >
+          ./gradlew --no-daemon :app:assembleRelease
+          -PgithubRepo=${{ github.repository }}
+          -PappVersionName=${{ steps.ver.outputs.name }}
+          -PappVersionCode=${{ steps.ver.outputs.code }}
+
+      - name: APK imzosini tekshirish
+        run: |
+          APK=$(ls app/build/outputs/apk/release/*.apk | head -n1)
+          APKSIGNER=$(ls $ANDROID_HOME/build-tools/*/apksigner | sort -V | tail -n1)
+          "$APKSIGNER" verify --print-certs "$APK"
+          cp "$APK" "NamozVaqtiPro-${TAG}.apk"
+          sha256sum "NamozVaqtiPro-${TAG}.apk" > "NamozVaqtiPro-${TAG}.apk.sha256"
+
+      - name: GitHub Release yaratish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" "NamozVaqtiPro-${TAG}.apk" "NamozVaqtiPro-${TAG}.apk.sha256" \
+            --title "Namoz Vaqti Pro ${TAG}" --generate-notes --verify-tag

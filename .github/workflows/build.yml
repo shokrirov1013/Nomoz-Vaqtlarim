@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit testlar (namoz vaqti, eslatma rejasi, hijriy sana, statistika)
+        run: ./gradlew --no-daemon :core:test -PgithubRepo=${{ github.repository }}
+
+      - name: Debug APK yig'ish
+        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug -PgithubRepo=${{ github.repository }}
+
+      - name: Test hisobotlari
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: core/build/reports/tests/test
+
+      - name: APK (faqat sinov uchun, debug imzo)
+        uses: actions/upload-artifact@v4
+        with:
+          name: namoz-vaqti-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

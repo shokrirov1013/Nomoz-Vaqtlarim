@@ -1,0 +1,207 @@
+package uz.namozvaqti.pro.alarm
+
+import android.app.Service
+import android.content.Context
+import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.os.Build
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
+import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
+import uz.namozvaqti.pro.R
+import uz.namozvaqti.pro.ServiceLocator
+import java.util.Locale
+
+/**
+ * Eslatma ovozi: avval foydalanuvchi bergan "ting" mp3, keyin o'zbekcha ovozli xabar (TTS).
+ * Foreground xizmat — ekran o'chiq va Doze rejimida ham to'liq ijro etiladi.
+ */
+class SpeechService : Service() {
+    private val handler = Handler(Looper.getMainLooper())
+    private val queue = ArrayDeque<String>()
+    private var busy = false
+    private var itemId = 0
+
+    private var tts: TextToSpeech? = null
+    private var ttsReady = false
+    private var voiceOk = false
+    private var pendingSpeak: String? = null
+    private var player: MediaPlayer? = null
+    private var focus: AudioFocusRequest? = null
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        tts = TextToSpeech(applicationContext) { status ->
+            handler.post {
+                ttsReady = true
+                if (status == TextToSpeech.SUCCESS) setupVoice()
+                pendingSpeak?.let { pendingSpeak = null; doSpeak(it) }
+            }
+        }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val n = NotificationCompat.Builder(this, Notifications.CH_PLAYBACK)
+            .setSmallIcon(R.drawable.ic_stat_namoz)
+            .setContentTitle("Namoz eslatmasi")
+            .setContentText("Ovozli xabar ijro etilmoqda")
+            .setOngoing(true)
+            .setSilent(true)
+            .build()
+        val type = if (Build.VERSION.SDK_INT >= 29) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK else 0
+        ServiceCompat.startForeground(this, Notifications.ID_PLAYBACK, n, type)
+
+        intent?.getStringExtra(Extra.TEXT)?.let { queue.addLast(it) }
+        if (!busy) playNext()
+        return START_NOT_STICKY
+    }
+
+    private fun attrs(speech: Boolean): AudioAttributes {
+        val silentOverride = ServiceLocator.get(this).settings.value.playInSilentMode
+        return AudioAttributes.Builder()
+            .setUsage(if (silentOverride) AudioAttributes.USAGE_ALARM else AudioAttributes.USAGE_NOTIFICATION_EVENT)
+            .setContentType(if (speech) AudioAttributes.CONTENT_TYPE_SPEECH else AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+    }
+
+    private fun playNext() {
+        val text = queue.removeFirstOrNull()
+        if (text == null) {
+            finishAll()
+            return
+        }
+        busy = true
+        val id = ++itemId
+        requestFocus()
+        // Qotib qolishdan himoya: bir xabar uchun eng ko'pi 45 soniya.
+        handler.postDelayed({ if (id == itemId && busy) itemDone(id) }, 45_000)
+        playChime { if (id == itemId) speak(text, id) }
+    }
+
+    private fun playChime(onDone: () -> Unit) {
+        try {
+            val mp = MediaPlayer()
+            player = mp
+            mp.setAudioAttributes(attrs(false))
+            resources.openRawResourceFd(R.raw.ting).use { mp.setDataSource(it.fileDescriptor, it.startOffset, it.length) }
+            mp.setOnCompletionListener { it.release(); player = null; onDone() }
+            mp.setOnErrorListener { p, _, _ -> p.release(); player = null; onDone(); true }
+            mp.prepare()
+            mp.start()
+        } catch (e: Exception) {
+            Log.w(TAG, "ting ijro bo'lmadi", e)
+            player?.release(); player = null
+            onDone()
+        }
+    }
+
+    private fun speak(text: String, id: Int) {
+        if (!ttsReady) {
+            pendingSpeak = text
+            return
+        }
+        doSpeak(text)
+    }
+
+    private fun doSpeak(text: String) {
+        val engine = tts
+        if (engine == null || !voiceOk) {
+            itemDone(itemId)
+            return
+        }
+        val id = itemId
+        engine.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {}
+            override fun onDone(utteranceId: String?) { handler.post { itemDone(id) } }
+            @Deprecated("Deprecated in Java")
+            override fun onError(utteranceId: String?) { handler.post { itemDone(id) } }
+        })
+        engine.setAudioAttributes(attrs(true))
+        val r = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "u$id")
+        if (r != TextToSpeech.SUCCESS) itemDone(id)
+    }
+
+    private fun itemDone(id: Int) {
+        if (id != itemId || !busy) return
+        busy = false
+        handler.removeCallbacksAndMessages(null)
+        playNext()
+    }
+
+    /** O'zbek ovozi; bo'lmasa sozlamadagi muqobil (turk tili o'zbek lotin imlosiga eng yaqin), keyin rus, ingliz. */
+    private fun setupVoice() {
+        val engine = tts ?: return
+        val pref = ServiceLocator.get(this).settings.value.ttsLang
+        val order = buildList {
+            if (pref != "auto") add(pref)
+            addAll(listOf("uz", "tr", "ru", "en"))
+        }.distinct()
+        for (code in order) {
+            val locale = if (code == "uz") Locale("uz", "UZ") else Locale(code)
+            val r = engine.isLanguageAvailable(locale)
+            if (r >= TextToSpeech.LANG_AVAILABLE) {
+                if (engine.setLanguage(locale) >= TextToSpeech.LANG_AVAILABLE) {
+                    engine.setSpeechRate(0.92f)
+                    engine.setPitch(1.0f)
+                    voiceOk = true
+                    Log.i(TAG, "TTS tili: $code")
+                    return
+                }
+            }
+        }
+        voiceOk = false
+        Log.w(TAG, "mos TTS ovozi topilmadi")
+    }
+
+    private fun requestFocus() {
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val req = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+            .setAudioAttributes(attrs(true))
+            .setOnAudioFocusChangeListener { }
+            .build()
+        focus = req
+        am.requestAudioFocus(req)
+    }
+
+    private fun finishAll() {
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        focus?.let { am.abandonAudioFocusRequest(it) }
+        focus = null
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        player?.release(); player = null
+        tts?.stop(); tts?.shutdown(); tts = null
+        super.onDestroy()
+    }
+
+    companion object {
+        private const val TAG = "SpeechService"
+
+        /** Ovozli xabarni navbatga qo'yadi. Foreground xizmat boshlanmasa, bildirishnoma o'zi qoladi. */
+        fun speak(ctx: Context, text: String) {
+            try {
+                ContextCompat.startForegroundService(
+                    ctx, Intent(ctx, SpeechService::class.java).putExtra(Extra.TEXT, text),
+                )
+            } catch (e: Exception) {
+                Log.w(TAG, "xizmatni boshlab bo'lmadi: ${e.message}")
+            }
+        }
+    }
+}
