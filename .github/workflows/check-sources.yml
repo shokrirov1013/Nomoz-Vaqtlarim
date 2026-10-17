@@ -1,0 +1,47 @@
+name: Check sources
+
+# islom.uz / Aladhan manbalari javob berayotganini tekshiradi (natija annotation'larda).
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: "Shahar (islom.uz nomi)"
+        default: "Andijon"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: islomapi.uz (islom.uz taqvimi)
+        run: |
+          set +e
+          R="${{ github.event.inputs.region }}"
+          M=$(date +%-m)
+          URL="https://islomapi.uz/api/monthly?region=${R}&month=${M}"
+          CODE=$(curl -sS -m 30 -o islom.json -w '%{http_code}' "$URL")
+          echo "HTTP $CODE  $URL"
+          if [ "$CODE" = "200" ]; then
+            python3 - <<'PY'
+          import json, datetime
+          d = json.load(open("islom.json"))
+          today = datetime.date.today().day
+          row = next((x for x in d if x.get("day") == today), d[0] if d else None)
+          print("kunlar soni:", len(d))
+          print("bugungi qator:", json.dumps(row, ensure_ascii=False))
+          t = (row or {}).get("times", {})
+          print("::notice title=islomapi.uz ISHLAYAPTI::" + str(len(d)) + " kun; " + json.dumps(t, ensure_ascii=False))
+          PY
+          else
+            echo "::warning title=islomapi.uz javob bermadi::HTTP $CODE"
+            head -c 300 islom.json
+          fi
+      - name: islom.uz sayti
+        run: |
+          set +e
+          CODE=$(curl -sS -m 30 -o /dev/null -w '%{http_code}' https://islom.uz/)
+          echo "::notice title=islom.uz sayti::HTTP $CODE"
+      - name: Aladhan (zaxira manba)
+        run: |
+          set +e
+          CODE=$(curl -sS -m 30 -o a.json -w '%{http_code}' "https://api.aladhan.com/v1/timingsByCity?city=Andijan&country=Uzbekistan&method=99&methodSettings=15,null,15&school=1")
+          echo "::notice title=Aladhan::HTTP $CODE $(python3 -c "import json;print(json.load(open('a.json'))['data']['timings'])" 2>/dev/null)"
