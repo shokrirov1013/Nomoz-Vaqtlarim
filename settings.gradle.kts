@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "NamozVaqtiPro"
+rootProject.name = "NamozVaqtlarim"
 include(":app", ":core")

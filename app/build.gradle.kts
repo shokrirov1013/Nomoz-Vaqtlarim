@@ -8,7 +8,7 @@ plugins {
 }
 
 // GitHub repository (yangilanishlarni tekshirish uchun): -PgithubRepo=owner/repo yoki gradle.properties
-val githubRepo: String = (project.findProperty("githubRepo") as String?) ?: "REPLACE_OWNER/namoz-vaqti-pro"
+val githubRepo: String = (project.findProperty("githubRepo") as String?) ?: "REPLACE_OWNER/namoz-vaqtlarim"
 val appVersionName: String = (project.findProperty("appVersionName") as String?) ?: "1.0.0"
 val appVersionCode: Int = ((project.findProperty("appVersionCode") as String?) ?: "1").toInt()
 

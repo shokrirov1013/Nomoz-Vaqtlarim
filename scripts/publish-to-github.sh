@@ -5,7 +5,7 @@
 set -euo pipefail
 
 OWNER="${1:?GitHub login kerak: scripts/publish-to-github.sh <login> [repo] [signing-papka]}"
-REPO="${2:-namoz-vaqti-pro}"
+REPO="${2:-namoz-vaqtlarim}"
 SIGNING="${3:-$(cd "$(dirname "$0")/.." && pwd)/signing}"
 FULL="$OWNER/$REPO"
 
@@ -16,7 +16,7 @@ source "$SIGNING/secrets.env"
 gh auth status >/dev/null || { echo "Avval: gh auth login"; exit 1; }
 
 if ! gh repo view "$FULL" >/dev/null 2>&1; then
-  gh repo create "$FULL" --public --source=. --remote=origin --description "Namoz Vaqti Pro — namoz vaqtlari, eslatmalar, budilnik (Android)"
+  gh repo create "$FULL" --public --source=. --remote=origin --description "Namoz Vaqtlarim — namoz vaqtlari, eslatmalar, budilnik (Android)"
 else
   git remote get-url origin >/dev/null 2>&1 || git remote add origin "https://github.com/$FULL.git"
 fi

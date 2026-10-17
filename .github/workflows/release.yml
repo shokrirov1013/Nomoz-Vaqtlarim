@@ -69,12 +69,12 @@ jobs:
           APK=$(ls app/build/outputs/apk/release/*.apk | head -n1)
           APKSIGNER=$(ls $ANDROID_HOME/build-tools/*/apksigner | sort -V | tail -n1)
           "$APKSIGNER" verify --print-certs "$APK"
-          cp "$APK" "NamozVaqtiPro-${TAG}.apk"
-          sha256sum "NamozVaqtiPro-${TAG}.apk" > "NamozVaqtiPro-${TAG}.apk.sha256"
+          cp "$APK" "NamozVaqtlarim-${TAG}.apk"
+          sha256sum "NamozVaqtlarim-${TAG}.apk" > "NamozVaqtlarim-${TAG}.apk.sha256"
 
       - name: GitHub Release yaratish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG" "NamozVaqtiPro-${TAG}.apk" "NamozVaqtiPro-${TAG}.apk.sha256" \
-            --title "Namoz Vaqti Pro ${TAG}" --generate-notes --verify-tag
+          gh release create "$TAG" "NamozVaqtlarim-${TAG}.apk" "NamozVaqtlarim-${TAG}.apk.sha256" \
+            --title "Namoz Vaqtlarim ${TAG}" --generate-notes --verify-tag

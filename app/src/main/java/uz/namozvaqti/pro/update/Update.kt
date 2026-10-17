@@ -184,7 +184,7 @@ class UpdateWorker(private val ctx: Context, params: WorkerParameters) : Corouti
             val text = if (ready) "Versiya ${r.version} yuklab olindi. O'rnatish uchun bosing." else "Versiya ${r.version} mavjud. Yuklab olish uchun bosing."
             val n = NotificationCompat.Builder(ctx, Notifications.CH_UPDATE)
                 .setSmallIcon(R.drawable.ic_stat_namoz)
-                .setContentTitle("Namoz Vaqti — yangilanish")
+                .setContentTitle("Namoz Vaqtlarim — yangilanish")
                 .setContentText(text)
                 .setAutoCancel(true)
                 .setContentIntent(Notifications.openAppIntent(ctx, 77))

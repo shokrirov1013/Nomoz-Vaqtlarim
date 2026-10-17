@@ -69,7 +69,7 @@ fun OnboardingScreen(vm: AppViewModel) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Namoz Vaqti", style = Type.H1)
+                Text("Namoz Vaqtlarim", style = Type.H1)
                 Text("${step + 1} / 3", style = Type.Caption)
             }
             CrescentMosqueArt(Modifier.size(width = 96.dp, height = 84.dp))

@@ -5,7 +5,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object Http {
-    private const val UA = "NamozVaqtiPro/1 (Android)"
+    private const val UA = "NamozVaqtlarim/1 (Android)"
 
     fun get(url: String, timeoutMs: Int = 15_000, accept: String = "application/json"): String {
         val c = open(url, timeoutMs, accept)
