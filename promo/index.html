@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Namoz Vaqtlarim — promo</title>
+<style>
+@font-face{font-family:"Mont";font-weight:500;src:url(fonts/montserrat-latin-500-normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Mont";font-weight:500;src:url(fonts/montserrat-latin-ext-500-normal.woff2);unicode-range:U+0100-02AF,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Mont";font-weight:500;src:url(fonts/montserrat-cyrillic-500-normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Mont";font-weight:500;src:url(fonts/montserrat-cyrillic-ext-500-normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}
+@font-face{font-family:"Mont";font-weight:700;src:url(fonts/montserrat-latin-700-normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Mont";font-weight:700;src:url(fonts/montserrat-latin-ext-700-normal.woff2);unicode-range:U+0100-02AF,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Mont";font-weight:700;src:url(fonts/montserrat-cyrillic-700-normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Mont";font-weight:700;src:url(fonts/montserrat-cyrillic-ext-700-normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}
+@font-face{font-family:"Mont";font-weight:800;src:url(fonts/montserrat-latin-800-normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Mont";font-weight:800;src:url(fonts/montserrat-latin-ext-800-normal.woff2);unicode-range:U+0100-02AF,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Mont";font-weight:800;src:url(fonts/montserrat-cyrillic-800-normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Mont";font-weight:800;src:url(fonts/montserrat-cyrillic-ext-800-normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}
+@font-face{font-family:"Amiri";font-weight:400;src:url(fonts/amiri-arabic-400-normal.woff2);unicode-range:U+0600-06FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE80-FEFC}
+@font-face{font-family:"Amiri";font-weight:700;src:url(fonts/amiri-arabic-700-normal.woff2);unicode-range:U+0600-06FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE80-FEFC}
+
+:root{--gold:#E3BC6A;--goldb:#F1D58C;--goldd:#C9973F;--mint:#8FD6C0;--em:#2FB38F;--ink:#F3EFE3;--soft:#A9C7BD;--ondark:#06231F}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;background:#041A18;overflow:hidden}
+body{font-family:"Mont","Amiri",sans-serif;color:var(--ink)}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:linear-gradient(180deg,#0B3B34 0%,#082E29 55%,#041A18 100%)}
+.abs{position:absolute}
+.scene{position:absolute;inset:0;opacity:0;will-change:opacity}
+.glass{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:2px solid rgba(255,255,255,.26);border-radius:56px;box-shadow:inset 0 2px 0 rgba(255,255,255,.38),0 30px 80px rgba(0,0,0,.28)}
+.glass.gold{background:linear-gradient(180deg,rgba(227,188,106,.20),rgba(227,188,106,.07));border-color:rgba(241,213,140,.45)}
+.head{position:absolute;left:70px;right:70px;top:130px;text-align:center;font-weight:800;font-size:72px;line-height:1.12;letter-spacing:-1px}
+.head em{font-style:normal;color:var(--goldb)}
+.sub{position:absolute;left:90px;right:90px;text-align:center;font-weight:500;font-size:40px;color:var(--soft)}
+.row{position:absolute;left:44px;right:44px;height:112px;display:flex;align-items:center;font-weight:700;font-size:46px}
+.row .nm{flex:1}
+.row .tm{color:var(--goldb);margin-right:28px}
+.pill{font-weight:700;font-size:28px;padding:12px 26px;border-radius:999px}
+.pill.ok{background:rgba(47,179,143,.28);color:var(--mint)}
+.pill.no{background:rgba(255,255,255,.08);color:var(--soft)}
+.chip{display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:36px;padding:18px 36px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:2px solid rgba(255,255,255,.26);color:var(--goldb)}
+.chip.on{background:linear-gradient(135deg,var(--goldb),var(--goldd));color:var(--ondark);border-color:rgba(255,255,255,.5)}
+svg{overflow:visible}
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- fon: naqsh, yorug' dog'lar, oltin changlar -->
+  <svg class="abs" id="pat" width="1400" height="2200" style="left:-160px;top:-140px">
+    <defs>
+      <pattern id="star" width="140" height="140" patternUnits="userSpaceOnUse">
+        <path d="M70 18 L84 56 L122 70 L84 84 L70 122 L56 84 L18 70 L56 56 Z" fill="none" stroke="#E3BC6A" stroke-opacity=".10" stroke-width="2"/>
+        <path d="M70 0 L70 140 M0 70 L140 70" stroke="#E3BC6A" stroke-opacity=".03" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1400" height="2200" fill="url(#star)"/>
+  </svg>
+  <div class="abs" id="glow1" style="width:1300px;height:1300px;left:0;top:0;background:radial-gradient(circle,rgba(47,179,143,.34),rgba(47,179,143,0) 62%)"></div>
+  <div class="abs" id="glow2" style="width:1300px;height:1300px;left:0;top:0;background:radial-gradient(circle,rgba(227,188,106,.20),rgba(227,188,106,0) 62%)"></div>
+  <div class="abs" id="dust" style="inset:0"></div>
+
+  <!-- 1: kirish -->
+  <div class="scene" id="s1">
+    <svg class="abs" id="crescent" width="560" height="560" viewBox="0 0 520 520" style="left:260px;top:360px">
+      <defs>
+        <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E3A1"/><stop offset="1" stop-color="#C9973F"/></linearGradient>
+        <radialGradient id="cg"><stop offset="0" stop-color="#E3BC6A" stop-opacity=".5"/><stop offset="1" stop-color="#E3BC6A" stop-opacity="0"/></radialGradient>
+        <mask id="cmask"><rect width="520" height="520" fill="white"/><circle cx="335" cy="205" r="168" fill="black"/></mask>
+      </defs>
+      <circle cx="260" cy="260" r="300" fill="url(#cg)"/>
+      <circle cx="240" cy="270" r="172" fill="url(#gold)" mask="url(#cmask)"/>
+    </svg>
+    <svg class="abs" id="mosque" width="1000" height="470" viewBox="0 0 1000 420" style="left:40px;top:1300px">
+      <defs>
+        <linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FD6C0" stop-opacity=".42"/><stop offset="1" stop-color="#2FB38F" stop-opacity=".08"/></linearGradient>
+      </defs>
+      <g fill="url(#mg)" stroke="#E3BC6A" stroke-opacity=".35" stroke-width="2">
+        <path d="M330 420 V300 C330 140 670 140 670 300 V420 Z"/>
+        <rect x="150" y="150" width="60" height="270"/><path d="M146 150 L180 60 L214 150 Z"/><rect x="136" y="205" width="88" height="16" rx="8"/>
+        <rect x="790" y="150" width="60" height="270"/><path d="M786 150 L820 60 L854 150 Z"/><rect x="776" y="205" width="88" height="16" rx="8"/>
+        <rect x="60" y="360" width="880" height="60"/>
+      </g>
+      <path d="M500 178 V120" stroke="#F1D58C" stroke-width="6" stroke-linecap="round"/><circle cx="500" cy="108" r="10" fill="#F1D58C"/>
+    </svg>
+    <div class="abs" id="title" style="left:0;right:0;top:1030px;text-align:center;font-weight:800;font-size:104px;letter-spacing:-2px;line-height:1;white-space:nowrap"></div>
+    <div class="abs sub" id="s1sub" style="top:1170px;font-size:42px">Namozni vaqtida o'qing — eslatma o'zi aytadi</div>
+  </div>
+
+  <!-- 2: aniq vaqt -->
+  <div class="scene" id="s2">
+    <div class="head" id="h2">Aniq vaqt — <em>joylashuvingiz</em> bo'yicha</div>
+    <div class="abs glass" id="card2" style="left:80px;top:420px;width:920px;height:1130px">
+      <div class="abs" style="left:48px;top:40px;font-weight:700;font-size:38px;color:var(--soft);display:flex;align-items:center"><span style="width:18px;height:18px;border-radius:50%;background:var(--em);display:inline-block;margin-right:16px"></span>Toshkent · GPS</div>
+      <div class="abs" style="right:48px;top:44px;font-weight:500;font-size:32px;color:var(--soft)">7 Jumodul avval 1448</div>
+      <div class="abs glass gold" style="left:36px;right:36px;top:118px;height:300px;border-radius:44px">
+        <div class="abs" style="left:44px;top:34px;font-size:30px;color:var(--soft);font-weight:500">Keyingi namoz</div>
+        <div class="abs" style="left:44px;top:80px;font-size:92px;font-weight:800">Asr</div>
+        <div class="abs" style="right:44px;top:98px;font-size:56px;font-weight:700;color:var(--goldb)">15:55</div>
+        <div class="abs" id="cd" style="left:44px;top:196px;font-size:78px;font-weight:800;color:var(--goldb);letter-spacing:2px">02:14:33</div>
+        <div class="abs" style="right:44px;top:218px;font-size:30px;color:var(--soft)">qoldi</div>
+      </div>
+      <div id="rows2"></div>
+      <div class="abs" id="sync" style="left:0;right:0;bottom:44px;text-align:center"><span class="chip on" style="font-size:32px;padding:16px 34px">✓ muslim.uz bilan sinxron</span></div>
+    </div>
+  </div>
+
+  <!-- 3: yumshoq eslatma -->
+  <div class="scene" id="s3">
+    <div class="head" id="h3">5 daqiqa oldin — <em>yumshoq</em> eslatma</div>
+    <div id="rings3"></div>
+    <svg class="abs" id="bell" width="330" height="330" viewBox="0 0 300 300" style="left:375px;top:400px;transform-origin:50% 8%">
+      <defs><linearGradient id="gold2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E3A1"/><stop offset="1" stop-color="#C9973F"/></linearGradient></defs>
+      <path d="M150 34C130 34 118 48 118 66C72 82 52 122 52 176L52 214L28 248L272 248L248 214L248 176C248 122 228 82 182 66C182 48 170 34 150 34Z" fill="url(#gold2)"/>
+      <circle cx="150" cy="272" r="24" fill="url(#gold2)"/>
+    </svg>
+    <div class="abs glass" id="notif" style="left:80px;top:860px;width:920px;height:300px">
+      <svg class="abs" width="84" height="84" viewBox="0 0 520 520" style="left:44px;top:44px"><mask id="m3"><rect width="520" height="520" fill="white"/><circle cx="335" cy="205" r="168" fill="black"/></mask><circle cx="240" cy="270" r="190" fill="#F1D58C" mask="url(#m3)"/></svg>
+      <div class="abs" style="left:156px;top:46px;font-size:38px;font-weight:700">Peshin — vaqt yaqinlashdi</div>
+      <div class="abs" id="ntext" style="left:156px;right:44px;top:112px;font-size:38px;line-height:1.35;font-weight:500;color:var(--soft)"></div>
+      <div class="abs" style="right:44px;top:52px;font-size:28px;color:var(--soft)">hozir</div>
+    </div>
+    <div class="abs" id="wave" style="left:150px;width:780px;top:1260px;height:180px"></div>
+    <div class="abs sub" id="wlabel" style="top:1470px;font-size:36px">«ting» doim chaladi · ovozli xabar ixtiyoriy</div>
+    <div class="abs" id="voices" style="left:0;right:0;top:1580px;text-align:center;display:flex;justify-content:center;gap:20px">
+      <span class="chip" id="v0">Madina</span><span class="chip" id="v1">Svetlana</span><span class="chip" id="v2">Telefon ovozi</span>
+    </div>
+  </div>
+
+  <!-- 4: bajarildi -->
+  <div class="scene" id="s4">
+    <div class="head" id="h4"><em>Bajarildi</em> — bir bosishda</div>
+    <div class="abs glass" id="card4" style="left:80px;top:400px;width:920px;height:700px"><div id="rows4"></div></div>
+    <svg class="abs" id="ring4" width="300" height="300" viewBox="0 0 300 300" style="left:160px;top:1170px">
+      <circle cx="150" cy="150" r="120" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="22"/>
+      <circle id="arc4" cx="150" cy="150" r="120" fill="none" stroke="#F1D58C" stroke-width="22" stroke-linecap="round" stroke-dasharray="754" stroke-dashoffset="754" transform="rotate(-90 150 150)"/>
+    </svg>
+    <div class="abs" id="cnt4" style="left:160px;top:1270px;width:300px;text-align:center;font-weight:800;font-size:92px">0/5</div>
+    <div class="abs" style="left:140px;top:1500px;width:340px;text-align:center;font-size:32px;color:var(--soft)">bajarildi</div>
+    <div class="abs glass" id="bars4" style="left:520px;top:1160px;width:480px;height:420px;border-radius:44px"><div class="abs" style="left:34px;top:22px;font-size:28px;color:var(--soft)">Haftalik statistika</div></div>
+  </div>
+
+  <!-- 5: suralar + tahajjud -->
+  <div class="scene" id="s5">
+    <div class="head" id="h5"><em>Suralar</em> va <em>Tahajjud</em></div>
+    <div class="abs glass gold" id="card5" style="left:80px;top:390px;width:920px;height:700px">
+      <div id="arab" class="abs" style="left:30px;right:30px;top:36px;direction:rtl;text-align:center;font-family:Amiri,serif;font-weight:700;color:var(--ink)"></div>
+      <div class="abs" id="cap5" style="left:0;right:0;bottom:30px;text-align:center;font-size:30px;color:var(--soft)">Ixlos surasi · muslim.uz rasmiy matni</div>
+    </div>
+    <div class="abs glass" id="card5b" style="left:80px;top:1140px;width:920px;height:540px">
+      <svg class="abs" width="90" height="90" viewBox="0 0 520 520" style="left:44px;top:40px"><mask id="m5"><rect width="520" height="520" fill="white"/><circle cx="335" cy="205" r="168" fill="black"/></mask><circle cx="240" cy="270" r="190" fill="#F1D58C" mask="url(#m5)"/></svg>
+      <div class="abs" style="left:160px;top:36px;font-size:52px;font-weight:800">Tahajjud</div>
+      <div class="abs" style="left:160px;top:104px;font-size:30px;color:var(--soft)">Kunlarni o'zingiz tanlang</div>
+      <div id="days5" class="abs" style="left:34px;right:34px;top:210px;display:flex;justify-content:space-between"></div>
+      <div class="abs" id="t5" style="left:0;right:0;top:340px;text-align:center;font-size:110px;font-weight:800;color:var(--goldb)">03:30</div>
+      <div class="abs" style="left:0;right:0;top:470px;text-align:center;font-size:30px;color:var(--soft)">tunning oxirgi uchdan biri</div>
+    </div>
+  </div>
+
+  <!-- 6: lotin / kirill -->
+  <div class="scene" id="s6">
+    <div class="head" id="h6"><em>Lotin</em> va <em>Кирилл</em></div>
+    <div class="abs glass" id="card6" style="left:80px;top:420px;width:920px;height:1000px">
+      <div class="abs" style="left:0;right:0;top:50px;text-align:center"><span class="chip" id="cl">O'zbekcha (Lotin)</span>&nbsp;&nbsp;<span class="chip" id="cc">Ўзбекча (Кирилл)</span></div>
+      <div class="abs" id="lat" style="left:30px;right:30px;top:260px;text-align:center"></div>
+      <div class="abs" id="cyr" style="left:30px;right:30px;top:260px;text-align:center"></div>
+      <div class="abs" style="left:0;right:0;top:760px;text-align:center"><span class="chip" id="big">Katta matn</span></div>
+    </div>
+    <div class="abs sub" id="s6sub" style="top:1500px">Kattalar ham oson o'qiydi</div>
+  </div>
+
+  <!-- 7: yakun -->
+  <div class="scene" id="s7">
+    <div class="abs" id="gl7" style="left:140px;top:300px;width:800px;height:800px;background:radial-gradient(circle,rgba(227,188,106,.38),rgba(227,188,106,0) 62%)"></div>
+    <img class="abs" id="icon7" src="icon.png" width="520" height="520" style="left:280px;top:340px;border-radius:120px;box-shadow:0 40px 120px rgba(0,0,0,.45)">
+    <div class="abs" id="t7" style="left:0;right:0;top:960px;text-align:center;font-weight:800;font-size:104px;letter-spacing:-2px">Namoz Vaqtlarim</div>
+    <div class="abs sub" id="s7a" style="top:1110px;font-size:46px;color:var(--ink)">Bepul · GitHub'dan yuklab oling</div>
+    <div class="abs" id="s7b" style="left:0;right:0;top:1200px;text-align:center"><span class="chip on" style="font-size:34px">github.com/shokrirov1013/Nomoz-Vaqtlarim</span></div>
+    <div class="abs sub" id="s7c" style="top:1480px;font-size:34px;line-height:1.5">Shokirov tomonidan yaratilgan<br>18 yoshli talaba — o'z istaklari yo'lida ishlab chiqqan</div>
+  </div>
+
+  <div class="abs" id="fade" style="inset:0;background:#041A18;opacity:0;pointer-events:none"></div>
+</div>
+
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo3=x=>1-Math.pow(1-x,3);
+const eio3=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eoBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const $=id=>document.getElementById(id);
+function put(e,o){const{a=1,x=0,y=0,s=1,r=0}=o;e.style.opacity=a;e.style.transform=`translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)`}
+function sceneA(t,a,b,f=.5){return Math.min(seg(t,a,a+f),1-seg(t,b-f,b))}
+const PRAYERS=[["Bomdod","05:19"],["Peshin","12:08"],["Asr","15:55"],["Shom","17:42"],["Xufton","18:57"]];
+
+// ---- qurish
+const dust=[];for(let i=0;i<44;i++){const d=document.createElement('div');d.className='abs';const sz=4+(i*7%6);d.style.cssText=`width:${sz}px;height:${sz}px;border-radius:50%;background:#F1D58C;left:0;top:0`;$('dust').appendChild(d);dust.push(d)}
+// sarlavha harflari
+const title=$('title');const TT="Namoz Vaqtlarim";const tl=[];for(const ch of TT){const s=document.createElement('span');s.textContent=ch===' '?' ':ch;s.style.display='inline-block';title.appendChild(s);tl.push(s)}
+// 2: qatorlar
+const rows2=[];PRAYERS.forEach((p,i)=>{const r=document.createElement('div');r.className='row';r.style.height='120px';r.style.top=(446+i*124)+'px';
+ const done=i<2;r.innerHTML=`<span class="nm">${p[0]}</span><span class="tm">${p[1]}</span><span class="pill ${done?'ok':'no'}">${done?'✓ Bajarildi':'Belgilanmagan'}</span>`;
+ $('rows2').appendChild(r);rows2.push(r)});
+// 3: halqalar, to'lqin
+const rings=[];for(let i=0;i<3;i++){const c=document.createElement('div');c.className='abs';c.style.cssText='left:540px;top:565px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid #F1D58C';$('rings3').appendChild(c);rings.push(c)}
+const bars=[];for(let i=0;i<28;i++){const b=document.createElement('div');b.className='abs';b.style.cssText=`left:${i*28}px;width:14px;border-radius:8px;background:linear-gradient(180deg,#F1D58C,#C9973F);bottom:0;height:16px`;$('wave').appendChild(b);bars.push(b)}
+// 4: qatorlar
+const rows4=[];PRAYERS.forEach((p,i)=>{const r=document.createElement('div');r.className='row';r.style.top=(26+i*130)+'px';r.style.height='120px';
+ r.innerHTML=`<span class="nm">${p[0]}</span><span class="tm">${p[1]}</span><svg width="80" height="80" viewBox="0 0 80 80" style="margin-right:6px"><circle cx="40" cy="40" r="34" fill="rgba(227,188,106,.0)" stroke="rgba(255,255,255,.28)" stroke-width="4"/><circle class="fillc" cx="40" cy="40" r="34" fill="rgba(227,188,106,.30)" stroke="#F1D58C" stroke-width="4" opacity="0"/><path class="chk" d="M22 42 L35 55 L58 27" fill="none" stroke="#F1D58C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="64" stroke-dashoffset="64"/></svg>`;
+ $('rows4').appendChild(r);rows4.push(r)});
+const b4=[];[3,5,4,5,5,4,5].forEach((v,i)=>{const b=document.createElement('div');b.className='abs';b.style.cssText=`left:${40+i*60}px;width:34px;bottom:70px;border-radius:12px;background:linear-gradient(180deg,#F1D58C,#C9973F);height:4px`;b.dataset.v=v;$('bars4').appendChild(b);b4.push(b);
+ const l=document.createElement('div');l.className='abs';l.style.cssText=`left:${40+i*60-8}px;width:50px;bottom:24px;text-align:center;font-size:24px;color:#A9C7BD`;l.textContent=["Du","Se","Ch","Pa","Ju","Sh","Ya"][i];$('bars4').appendChild(l)});
+// 5: arabcha qatorlar, kunlar
+const AR=[["بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",52],["قُلْ هُوَ اللَّهُ أَحَدٌ",84],["اللَّهُ الصَّمَدُ",84],["لَمْ يَلِدْ وَلَمْ يُولَدْ",84],["وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",84]];
+const arl=[];AR.forEach(([tx,sz])=>{const d=document.createElement('div');d.textContent=tx;d.style.cssText=`font-size:${sz}px;line-height:1.55;opacity:0`;$('arab').appendChild(d);arl.push(d)});
+const days=[];["Du","Se","Ch","Pa","Ju","Sh","Ya"].forEach((n,i)=>{const c=document.createElement('span');c.className='chip';c.style.cssText='font-size:30px;padding:16px 0;width:100px';c.textContent=n;$('days5').appendChild(c);days.push(c)});
+// 6: matnlar
+$('lat').innerHTML='<div style="font-weight:800;font-size:92px;line-height:1.1">Namoz<br>Vaqtlarim</div><div style="margin-top:36px;font-size:48px;font-weight:700;color:#F1D58C">Bomdod · 05:19</div>';
+$('cyr').innerHTML='<div style="font-weight:800;font-size:92px;line-height:1.1">Намоз<br>Вақтларим</div><div style="margin-top:36px;font-size:48px;font-weight:700;color:#F1D58C">Бомдод · 05:19</div>';
+
+const NOTIF="Peshin namoziga besh daqiqa qoldi. Iltimos, o'qib oling.";
+
+function render(t){
+  // fon
+  const dx=(t*9)%140, dy=(t*6)%140; $('pat').style.transform=`translate(${dx}px,${dy}px)`;
+  $('glow1').style.transform=`translate(${520+Math.sin(t*.35)*60}px,${-250+Math.cos(t*.3)*50}px)`;
+  $('glow2').style.transform=`translate(${-780+Math.cos(t*.28)*60}px,${1050+Math.sin(t*.33)*60}px)`;
+  dust.forEach((d,i)=>{const x=(i*137.5)%1080+Math.sin(t*.5+i)*34;const sp=18+(i%7)*9;const y=1920-((t*sp+i*97)%(1920+120))+60;d.style.transform=`translate(${x}px,${y}px)`;d.style.opacity=(.18+.38*Math.abs(Math.sin(t*1.3+i)))*(i%3===0?1:.7)});
+
+  // sahna ko'rinishi
+  put($('s1'),{a:sceneA(t,-1,5.3)}); put($('s2'),{a:sceneA(t,4.8,11.3)}); put($('s3'),{a:sceneA(t,10.8,17.3)});
+  put($('s4'),{a:sceneA(t,16.8,23.3)}); put($('s5'),{a:sceneA(t,22.8,29.3)}); put($('s6'),{a:sceneA(t,28.8,33.3)});
+  put($('s7'),{a:Math.min(seg(t,32.8,33.4),1)});
+
+  // ---- 1
+  const cr=eo3(seg(t,0.2,2.2)); put($('crescent'),{a:cr,y:(1-cr)*260,s:.8+.2*cr,r:(1-cr)*-18+Math.sin(t*.9)*1.5});
+  const ms=eo3(seg(t,0.6,2.8)); put($('mosque'),{a:ms*.95,y:(1-ms)*160});
+  tl.forEach((s,i)=>{const p=eoBack(seg(t,2.0+i*.055,2.7+i*.055));s.style.opacity=clamp(p);s.style.transform=`translateY(${(1-clamp(p,0,1.2))*50}px)`});
+  put($('s1sub'),{a:eo3(seg(t,3.5,4.4)),y:(1-eo3(seg(t,3.5,4.4)))*30});
+
+  // ---- 2
+  const h2=eo3(seg(t,5.1,5.9)); put($('h2'),{a:h2,y:(1-h2)*-40});
+  const c2=eo3(seg(t,5.3,6.2)); put($('card2'),{a:c2,y:(1-c2)*120,s:.94+.06*c2});
+  const cdsec=Math.max(0,8080-(t-5.3)); const hh=Math.floor(cdsec/3600),mm=Math.floor(cdsec%3600/60),ss=Math.floor(cdsec%60);
+  $('cd').textContent=[hh,mm,ss].map(v=>String(v).padStart(2,'0')).join(':');
+  rows2.forEach((r,i)=>{const p=eoBack(seg(t,6.3+i*.28,7.0+i*.28));put(r,{a:clamp(p),x:(1-clamp(p,0,1.15))*160})});
+  const sy=eoBack(seg(t,9.0,9.8)); put($('sync'),{a:clamp(sy),s:.7+.3*clamp(sy,0,1.1)});
+
+  // ---- 3
+  const h3=eo3(seg(t,11.1,11.9)); put($('h3'),{a:h3,y:(1-h3)*-40});
+  const bl=eoBack(seg(t,11.2,12.0)); const sw=t>12.2?Math.sin((t-12.2)*7)*Math.exp(-(t-12.2)*.55)*20:0;
+  put($('bell'),{a:clamp(bl),s:.5+.5*clamp(bl,0,1.1),r:sw});
+  rings.forEach((c,i)=>{const p=seg((t-12.2-i*.45)%1.8+ (t<12.2?-99:0),0,1.4);const on=t>12.2&&t<16.6;const r=10+p*560;c.style.width=r+'px';c.style.height=r+'px';c.style.margin=(-r/2)+'px';c.style.opacity=on?(1-p)*.55*(p>0?1:0):0});
+  const nt=eo3(seg(t,12.6,13.3)); put($('notif'),{a:nt,y:(1-nt)*-200,s:.96+.04*nt});
+  const nchars=Math.floor(seg(t,13.4,15.4)*NOTIF.length); $('ntext').textContent=NOTIF.slice(0,nchars);
+  const env=eio3(seg(t,13.4,13.9))*(1-eio3(seg(t,16.2,16.8)));
+  bars.forEach((b,i)=>{const h=16+(t>13.4?(110*Math.abs(Math.sin(t*7+i*.55))*(.5+.5*Math.sin(t*2.3+i*.2))+20)*env:0);b.style.height=h+'px'});
+  put($('wlabel'),{a:eo3(seg(t,12.9,13.6))}); put($('wave'),{a:eo3(seg(t,13.2,13.8))*(1-seg(t,16.8,17.2)*0)});
+  const vt=eo3(seg(t,14.2,14.9)); put($('voices'),{a:vt,y:(1-vt)*40});
+  const vsel=t<15.2?0:(t<15.9?1:2); ['v0','v1','v2'].forEach((id,i)=>$(id).classList.toggle('on',t>=15.0&&i===vsel));
+
+  // ---- 4
+  const h4=eo3(seg(t,17.1,17.9)); put($('h4'),{a:h4,y:(1-h4)*-40});
+  const c4=eo3(seg(t,17.3,18.2)); put($('card4'),{a:c4,y:(1-c4)*100,s:.95+.05*c4});
+  let done=0;rows4.forEach((r,i)=>{const p=eoBack(seg(t,18.0+i*.25,18.7+i*.25));put(r,{a:clamp(p),x:(1-clamp(p,0,1.1))*120});
+   const tk=seg(t,19.0+i*.55,19.5+i*.55);if(tk>=1)done++;
+   r.querySelector('.chk').style.strokeDashoffset=64*(1-eo3(tk));r.querySelector('.fillc').style.opacity=eo3(tk);
+   const s=1+.18*Math.sin(Math.PI*clamp(seg(t,19.0+i*.55,19.7+i*.55)));r.querySelector('svg').style.transform=`scale(${s})`});
+  $('cnt4').textContent=done+'/5'; $('arc4').style.strokeDashoffset=754*(1-done/5*eo3(1));
+  const rg=eo3(seg(t,18.6,19.3)); put($('ring4'),{a:rg}); put($('cnt4'),{a:rg});
+  const b4c=eo3(seg(t,20.0,20.9)); put($('bars4'),{a:b4c,y:(1-b4c)*80});
+  b4.forEach((b,i)=>{const p=eo3(seg(t,21.0+i*.15,21.8+i*.15));b.style.height=(8+p*(+b.dataset.v)*50)+'px'});
+  put($('arc4').parentNode,{a:rg});
+
+  // ---- 5
+  const h5=eo3(seg(t,23.1,23.9)); put($('h5'),{a:h5,y:(1-h5)*-40});
+  const c5=eo3(seg(t,23.3,24.2)); put($('card5'),{a:c5,y:(1-c5)*100,s:.95+.05*c5});
+  arl.forEach((d,i)=>{const p=eo3(seg(t,24.2+i*.7,25.0+i*.7));d.style.opacity=p;d.style.transform=`translateY(${(1-p)*24}px)`;d.style.textShadow=`0 0 ${20+18*Math.sin(t*2+i)}px rgba(241,213,140,${.35*p})`});
+  const c5b=eo3(seg(t,26.0,26.9)); put($('card5b'),{a:c5b,y:(1-c5b)*100,s:.95+.05*c5b});
+  days.forEach((c,i)=>{const p=eoBack(seg(t,26.6+i*.1,27.2+i*.1));c.style.opacity=clamp(p);c.style.transform=`scale(${.7+.3*clamp(p,0,1.1)})`;c.classList.toggle('on',[0,2,4].includes(i)&&t>27.6+(i/2)*.35)});
+  $('t5').style.opacity=eo3(seg(t,27.4,28.0));$('t5').style.transform=`scale(${.9+.1*eo3(seg(t,27.4,28.2))})`;
+
+  // ---- 6
+  const h6=eo3(seg(t,29.1,29.9)); put($('h6'),{a:h6,y:(1-h6)*-40});
+  const c6=eo3(seg(t,29.3,30.1)); put($('card6'),{a:c6,y:(1-c6)*100,s:.95+.05*c6});
+  const flip=eio3(seg(t,30.7,31.4)); // lotin -> kirill
+  put($('lat'),{a:1-flip,y:-flip*30,s:1-.04*flip}); put($('cyr'),{a:flip,y:(1-flip)*30,s:.96+.04*flip});
+  $('cl').classList.toggle('on',flip<.5); $('cc').classList.toggle('on',flip>=.5);
+  const bg=eio3(seg(t,31.8,32.4)); $('big').classList.toggle('on',bg>.5);
+  put($('lat'),{a:(1-flip),y:-flip*30,s:(1-.04*flip)*(1+.08*bg)}); put($('cyr'),{a:flip,y:(1-flip)*30,s:(.96+.04*flip)*(1+.08*bg)});
+  put($('s6sub'),{a:eo3(seg(t,31.4,32.2))});
+
+  // ---- 7
+  const ic=eoBack(seg(t,33.2,34.2)); put($('icon7'),{a:clamp(ic),s:.5+.5*clamp(ic,0,1.1),y:Math.sin(t*1.4)*6});
+  put($('gl7'),{a:eo3(seg(t,33.2,34.4)),s:1+.05*Math.sin(t*1.2)});
+  const t7=eo3(seg(t,34.0,34.8)); put($('t7'),{a:t7,y:(1-t7)*40});
+  put($('s7a'),{a:eo3(seg(t,34.5,35.2)),y:(1-eo3(seg(t,34.5,35.2)))*30});
+  const lk=eoBack(seg(t,34.9,35.6)); put($('s7b'),{a:clamp(lk),s:.8+.2*clamp(lk,0,1.1)});
+  put($('s7c'),{a:eo3(seg(t,35.4,36.2)),y:(1-eo3(seg(t,35.4,36.2)))*30});
+  $('fade').style.opacity=seg(t,37.3,38.0);
+}
+window.render=render; render(0);
+</script>
+</body>
+</html>
