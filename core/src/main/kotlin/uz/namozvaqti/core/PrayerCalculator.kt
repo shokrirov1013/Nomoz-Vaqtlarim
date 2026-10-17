@@ -66,17 +66,18 @@ object PrayerCalculator {
             return angleTime(angle, t, ccw = false)
         }
 
-        // Ikki marta iteratsiya: vaqtlar kunning boshlang'ich taxminidan aniqlashtiriladi.
-        var fajr = 5.0 / 24; var sunrise = 6.0 / 24; var dhuhr = 12.0 / 24
-        var asr = 13.0 / 24; var sunset = 18.0 / 24; var isha = 18.0 / 24
+        // Ikki marta iteratsiya: vaqtlar (soatda) kunning boshlang'ich taxminidan aniqlashtiriladi.
+        // MUHIM: har bir hisobga vaqt kun ULUSHI (soat/24) sifatida uzatiladi.
+        var fajr = 5.0; var sunrise = 6.0; var dhuhr = 12.0
+        var asr = 13.0; var sunset = 18.0; var isha = 18.0
         repeat(2) {
-            fajr = angleTime(method.fajrAngle, fajr, ccw = true)
-            sunrise = angleTime(0.833, sunrise, ccw = true)
-            dhuhr = midDay(dhuhr)
-            asr = asrTime(asr)
-            sunset = angleTime(0.833, sunset, ccw = false)
+            fajr = angleTime(method.fajrAngle, fajr / 24, ccw = true)
+            sunrise = angleTime(0.833, sunrise / 24, ccw = true)
+            dhuhr = midDay(dhuhr / 24)
+            asr = asrTime(asr / 24)
+            sunset = angleTime(0.833, sunset / 24, ccw = false)
             isha = if (method.ishaAfterMaghribMinutes > 0) sunset
-            else angleTime(method.ishaAngle, isha, ccw = false)
+            else angleTime(method.ishaAngle, isha / 24, ccw = false)
         }
         val adjust = utcOffsetHours - longitude / 15.0
         fun fin(h: Double) = toTime(h + adjust)
