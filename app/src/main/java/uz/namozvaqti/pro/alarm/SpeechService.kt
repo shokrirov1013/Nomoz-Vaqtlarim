@@ -64,6 +64,7 @@ class SpeechService : Service() {
         val type = if (Build.VERSION.SDK_INT >= 29) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK else 0
         ServiceCompat.startForeground(this, Notifications.ID_PLAYBACK, n, type)
 
+        // Bo'sh matn = faqat "ting" (ovozli xabar o'chirilgan).
         intent?.getStringExtra(Extra.TEXT)?.let { queue.addLast(it) }
         if (!busy) playNext()
         return START_NOT_STICKY
@@ -88,7 +89,7 @@ class SpeechService : Service() {
         requestFocus()
         // Qotib qolishdan himoya: bir xabar uchun eng ko'pi 45 soniya.
         handler.postDelayed({ if (id == itemId && busy) itemDone(id) }, 45_000)
-        playChime { if (id == itemId) speak(text, id) }
+        playChime { if (id != itemId) return@playChime; if (text.isEmpty()) itemDone(id) else speak(text, id) }
     }
 
     /**
@@ -232,10 +233,11 @@ class SpeechService : Service() {
         private const val TAG = "SpeechService"
 
         /** Ovozli xabarni navbatga qo'yadi. Foreground xizmat boshlanmasa, bildirishnoma o'zi qoladi. */
-        fun speak(ctx: Context, text: String): Boolean =
+        /** Doim "ting" chaladi; [withVoice] = false bo'lsa, nutq (ovozli xabar) o'qilmaydi. */
+        fun speak(ctx: Context, text: String, withVoice: Boolean = true): Boolean =
             try {
                 ContextCompat.startForegroundService(
-                    ctx, Intent(ctx, SpeechService::class.java).putExtra(Extra.TEXT, text),
+                    ctx, Intent(ctx, SpeechService::class.java).putExtra(Extra.TEXT, if (withVoice) text else ""),
                 )
                 true
             } catch (e: Exception) {

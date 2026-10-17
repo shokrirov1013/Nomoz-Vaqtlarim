@@ -36,6 +36,8 @@ data class Settings(
     val followupCount: Int = 3,
     val playInSilentMode: Boolean = false,
     /** Muloyim ohang: yumshoq ovoz, qisqa ting, muloyim matn, asta kuchayadigan budilnik. */
+    /** Ovozli xabar (nutq) yoqilgan/o'chirilgan. "Ting" bundan qat'i nazar doim chaladi. */
+    val voiceEnabled: Boolean = true,
     val gentle: Boolean = true,
     val reminderVolume: Int = 70,
     val ttsLang: String = "auto",
@@ -91,6 +93,7 @@ class SettingsStore(context: Context) {
             followupIntervalMinutes = p.getInt("followupInterval", d.followupIntervalMinutes),
             followupCount = p.getInt("followupCount", d.followupCount),
             playInSilentMode = p.getBoolean("playInSilentMode", d.playInSilentMode),
+            voiceEnabled = p.getBoolean("voiceEnabled", d.voiceEnabled),
             gentle = p.getBoolean("gentle", d.gentle),
             reminderVolume = p.getInt("reminderVolume", d.reminderVolume),
             ttsLang = p.getString("ttsLang", d.ttsLang) ?: d.ttsLang,
@@ -126,6 +129,7 @@ class SettingsStore(context: Context) {
             putInt("followupInterval", s.followupIntervalMinutes)
             putInt("followupCount", s.followupCount)
             putBoolean("playInSilentMode", s.playInSilentMode)
+            putBoolean("voiceEnabled", s.voiceEnabled)
             putBoolean("gentle", s.gentle)
             putInt("reminderVolume", s.reminderVolume)
             putString("ttsLang", s.ttsLang)

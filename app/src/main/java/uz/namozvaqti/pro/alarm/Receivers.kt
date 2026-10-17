@@ -75,7 +75,7 @@ class ReminderReceiver : BroadcastReceiver() {
         }
         Notifications.postReminder(ctx, event, text)
         // Ovoz xizmatini boshlab bo'lmasa, tizim ovozi bilan zaxira bildirishnoma.
-        if (!SpeechService.speak(ctx, text)) Notifications.postReminder(ctx, event, text, systemSound = true)
+        if (!SpeechService.speak(ctx, text, withVoice = s.voiceEnabled)) Notifications.postReminder(ctx, event, text, systemSound = true)
     }
 }
 

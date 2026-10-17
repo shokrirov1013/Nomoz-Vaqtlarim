@@ -156,13 +156,16 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
             SwitchRow("Sokin rejimda ham ovoz chiqarish", "Ovoz budilnik kanalidan chaladi", s.playInSilentMode) { on ->
                     vm.updateSettings(false) { it.copy(playInSilentMode = on) }
                 }
+                SwitchRow("Ovozli eslatma", "O'chirilsa faqat «ting» chaladi. «Ting» har doim chaladi.", s.voiceEnabled) { on ->
+                    vm.updateSettings(false) { it.copy(voiceEnabled = on) }
+                }
                 DropdownRow(
                     "Ovozli xabar tili", ttsLabel(s.ttsLang),
                     listOf("auto" to "Avtomatik (o'zbek → turk → rus)", "uz" to "O'zbekcha", "tr" to "Turkcha (muqobil)", "ru" to "Ruscha (muqobil)", "en" to "Inglizcha (muqobil)"),
                 ) { v -> vm.updateSettings(false) { it.copy(ttsLang = v) } }
                 Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GlassButton("Ovozni sinash", {
-                        SpeechService.speak(ctx, PrayerTexts.mainText(Prayer.DHUHR, LocalDate.of(2026, 1, 5), s.gender, s.gentle))
+                        SpeechService.speak(ctx, PrayerTexts.mainText(Prayer.DHUHR, LocalDate.of(2026, 1, 5), s.gender, s.gentle), withVoice = s.voiceEnabled)
                     }, small = true, filled = false, modifier = Modifier.weight(1f))
                     GlassButton("Ovoz ma'lumoti", { Perms.openTtsSettings(ctx) }, small = true, filled = false, modifier = Modifier.weight(1f))
                 }
