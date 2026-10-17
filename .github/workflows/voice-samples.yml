@@ -1,0 +1,31 @@
+name: Voice samples
+
+# Ovoz tanlash uchun namunalar yaratadi va `voice-samples` branch'iga joylaydi.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -U edge-tts
+      - run: python voicepack/make_samples.py
+      - name: voice-samples branch'iga joylash
+        run: |
+          mkdir -p "$RUNNER_TEMP/s" && cp -r out/. "$RUNNER_TEMP/s/"
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan voice-samples
+          git rm -rf --cached . -q
+          git clean -fdxq
+          cp -r "$RUNNER_TEMP/s/." .
+          git add -A
+          git commit -qm "Ovoz namunalari"
+          git push -f origin voice-samples
