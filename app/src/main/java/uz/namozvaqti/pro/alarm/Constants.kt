@@ -7,6 +7,7 @@ object Extra {
     const val AT = "at"
     const val KIND = "kind"
     const val TEXT = "text"
+    const val CLIP = "clip"
 }
 
 object Act {

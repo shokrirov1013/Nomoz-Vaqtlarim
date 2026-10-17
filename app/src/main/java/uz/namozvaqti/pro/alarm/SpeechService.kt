@@ -29,7 +29,8 @@ import java.util.Locale
  */
 class SpeechService : Service() {
     private val handler = Handler(Looper.getMainLooper())
-    private val queue = ArrayDeque<String>()
+    private class Item(val text: String, val clip: String?)
+    private val queue = ArrayDeque<Item>()
     private var busy = false
     private var itemId = 0
 
@@ -65,7 +66,7 @@ class SpeechService : Service() {
         ServiceCompat.startForeground(this, Notifications.ID_PLAYBACK, n, type)
 
         // Bo'sh matn = faqat "ting" (ovozli xabar o'chirilgan).
-        intent?.getStringExtra(Extra.TEXT)?.let { queue.addLast(it) }
+        intent?.getStringExtra(Extra.TEXT)?.let { queue.addLast(Item(it, intent.getStringExtra(Extra.CLIP))) }
         if (!busy) playNext()
         return START_NOT_STICKY
     }
@@ -79,17 +80,24 @@ class SpeechService : Service() {
     }
 
     private fun playNext() {
-        val text = queue.removeFirstOrNull()
-        if (text == null) {
+        val item = queue.removeFirstOrNull()
+        if (item == null) {
             finishAll()
             return
         }
+        val text = item.text
         busy = true
         val id = ++itemId
         requestFocus()
         // Qotib qolishdan himoya: bir xabar uchun eng ko'pi 45 soniya.
         handler.postDelayed({ if (id == itemId && busy) itemDone(id) }, 45_000)
-        playChime { if (id != itemId) return@playChime; if (text.isEmpty()) itemDone(id) else speak(text, id) }
+        playChime {
+            if (id != itemId) return@playChime
+            when {
+                text.isEmpty() -> itemDone(id)
+                !playClip(item.clip, id) -> speak(text, id)
+            }
+        }
     }
 
     /**
@@ -137,6 +145,35 @@ class SpeechService : Service() {
             Log.w(TAG, "ting ijro bo'lmadi", e)
             player?.release(); player = null
             onDone()
+        }
+    }
+
+    /**
+     * Tayyor ovoz paketidan (res/raw/v_<til>_<kalit>.mp3) ijro etadi. Paket yoki fayl bo'lmasa false
+     * qaytaradi — shunda telefon ovozi (TTS) ishlatiladi.
+     */
+    private fun playClip(clip: String?, id: Int): Boolean {
+        if (clip == null) return false
+        val st = ServiceLocator.get(this).settings.value
+        if (st.voiceSource != "uz" && st.voiceSource != "ru") return false
+        val res = resources.getIdentifier("v_${st.voiceSource}_$clip", "raw", packageName)
+        if (res == 0) return false
+        return try {
+            val mp = MediaPlayer()
+            player = mp
+            mp.setAudioAttributes(attrs(true))
+            resources.openRawResourceFd(res).use { mp.setDataSource(it.fileDescriptor, it.startOffset, it.length) }
+            mp.prepare()
+            val v = (st.reminderVolume / 100f).coerceIn(0.1f, 1f)
+            mp.setVolume(v, v)
+            mp.setOnCompletionListener { p -> p.release(); if (player === p) player = null; handler.post { itemDone(id) } }
+            mp.setOnErrorListener { p, _, _ -> p.release(); if (player === p) player = null; handler.post { itemDone(id) }; true }
+            mp.start()
+            true
+        } catch (e: Exception) {
+            Log.w(TAG, "ovoz paketi ijro bo'lmadi: ${e.message}")
+            player?.release(); player = null
+            false
         }
     }
 
@@ -234,10 +271,11 @@ class SpeechService : Service() {
 
         /** Ovozli xabarni navbatga qo'yadi. Foreground xizmat boshlanmasa, bildirishnoma o'zi qoladi. */
         /** Doim "ting" chaladi; [withVoice] = false bo'lsa, nutq (ovozli xabar) o'qilmaydi. */
-        fun speak(ctx: Context, text: String, withVoice: Boolean = true): Boolean =
+        fun speak(ctx: Context, text: String, withVoice: Boolean = true, clip: String? = null): Boolean =
             try {
                 ContextCompat.startForegroundService(
-                    ctx, Intent(ctx, SpeechService::class.java).putExtra(Extra.TEXT, if (withVoice) text else ""),
+                    ctx,
+                    Intent(ctx, SpeechService::class.java).putExtra(Extra.TEXT, if (withVoice) text else "").putExtra(Extra.CLIP, clip),
                 )
                 true
             } catch (e: Exception) {

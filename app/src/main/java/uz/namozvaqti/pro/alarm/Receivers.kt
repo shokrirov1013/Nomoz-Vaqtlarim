@@ -12,6 +12,7 @@ import uz.namozvaqti.core.PrayerTexts
 import uz.namozvaqti.core.ReminderEvent
 import uz.namozvaqti.core.ReminderKind
 import uz.namozvaqti.core.ReminderPlanner
+import uz.namozvaqti.core.VoiceKeys
 import uz.namozvaqti.pro.ServiceLocator
 import uz.namozvaqti.pro.data.ReminderState
 import java.time.Duration
@@ -74,8 +75,14 @@ class ReminderReceiver : BroadcastReceiver() {
             ReminderKind.FOLLOWUP -> PrayerTexts.followupText(prayer, event.followupIndex, s.policy.followups, s.gentle)
         }
         Notifications.postReminder(ctx, event, text)
+        // Tayyor ovoz paketi muloyim matnlar uchun yozilgan; oldindan eslatma — faqat 5 daqiqa uchun.
+        val clip = if (!s.gentle) null else when (event.kind) {
+            ReminderKind.PRE -> if (s.preMinutes == VoiceKeys.PRE_MINUTES) VoiceKeys.pre(prayer) else null
+            ReminderKind.MAIN -> VoiceKeys.main(prayer, date, s.gender)
+            ReminderKind.FOLLOWUP -> VoiceKeys.followup(prayer, event.followupIndex, s.policy.followups)
+        }
         // Ovoz xizmatini boshlab bo'lmasa, tizim ovozi bilan zaxira bildirishnoma.
-        if (!SpeechService.speak(ctx, text, withVoice = s.voiceEnabled)) Notifications.postReminder(ctx, event, text, systemSound = true)
+        if (!SpeechService.speak(ctx, text, withVoice = s.voiceEnabled, clip = clip)) Notifications.postReminder(ctx, event, text, systemSound = true)
     }
 }
 

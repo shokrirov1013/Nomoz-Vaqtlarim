@@ -38,6 +38,8 @@ data class Settings(
     /** Muloyim ohang: yumshoq ovoz, qisqa ting, muloyim matn, asta kuchayadigan budilnik. */
     /** Ovozli xabar (nutq) yoqilgan/o'chirilgan. "Ting" bundan qat'i nazar doim chaladi. */
     val voiceEnabled: Boolean = true,
+    /** Ovoz turi: "uz" (tayyor o'zbekcha), "ru" (tayyor ruscha), "tts" (telefon ovozi). */
+    val voiceSource: String = "uz",
     /** Yozuv: "latin" yoki "cyrillic". */
     val script: String = "latin",
     /** Kattalar uchun kattaroq matn. */
@@ -100,6 +102,7 @@ class SettingsStore(context: Context) {
             followupCount = p.getInt("followupCount", d.followupCount),
             playInSilentMode = p.getBoolean("playInSilentMode", d.playInSilentMode),
             voiceEnabled = p.getBoolean("voiceEnabled", d.voiceEnabled),
+            voiceSource = p.getString("voiceSource", d.voiceSource) ?: d.voiceSource,
             script = p.getString("script", d.script) ?: d.script,
             bigText = p.getBoolean("bigText", d.bigText),
             gentle = p.getBoolean("gentle", d.gentle),
@@ -138,6 +141,7 @@ class SettingsStore(context: Context) {
             putInt("followupCount", s.followupCount)
             putBoolean("playInSilentMode", s.playInSilentMode)
             putBoolean("voiceEnabled", s.voiceEnabled)
+            putString("voiceSource", s.voiceSource)
             putString("script", s.script)
             putBoolean("bigText", s.bigText)
             putBoolean("gentle", s.gentle)

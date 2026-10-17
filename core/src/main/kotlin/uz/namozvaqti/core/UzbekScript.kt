@@ -12,7 +12,7 @@ object UzbekScript {
         "Android", "Wi-Fi", "Hanafiy_",
     )
     private val vowels = "aeiouoʻ"
-    private val cache = HashMap<String, String>()
+    private val cache = java.util.concurrent.ConcurrentHashMap<String, String>()
 
     /**
      * Tanlangan yozuvda ko'rsatish. Manba lotin ham, kirill ham bo'lishi mumkin (suralar matni rasmiy kirillda).

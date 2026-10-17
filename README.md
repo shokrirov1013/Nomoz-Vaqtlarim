@@ -13,7 +13,9 @@ Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, ikonkaga 
 ## Imkoniyatlar
 
 - **Besh vaqt namoz** (Bomdod, Peshin, Asr, Shom, Xufton) + Quyosh chiqishi (namoz hisoblanmaydi).
-- **Namoz vaqti manbalari** (ustuvorlik bilan): islom.uz ma'lumoti → Aladhan API (aniq GPS) → qurilmada astronomik hisoblash (internetsiz). Oxirgi saqlangan jadval oflaynda ishlaydi, manba va yangilanish vaqti bosh sahifada ko'rinadi.
+- **Namoz vaqti manbalari** ("O'zbekiston" usuli): islom.uz (ishlasa) → **muslim.uz (O'zbekiston Musulmonlari idorasi) bilan sinxronlangan hisob** → telefondagi hisob. Hisob joylashuvingiz uchun aniq bajariladi va har kuni idora vaqtlariga (Bomdod/Shom/Xufton "ehtiyot" daqiqalari) moslanadi. Internet bo'lmasa oxirgi moslama bilan ishlaydi. Manba va yangilanish vaqti bosh sahifada ko'rinadi, "Yangilash" tugmasi bor.
+- **Til va yozuv**: **lotin** yoki **kirill** (Sozlamalar yoki birinchi ochilishda), kattalar uchun "Katta matn". Hamma matn, suralar va bildirishnomalar tanlangan yozuvda chiqadi.
+- **Ovoz turi**: tayyor **o'zbekcha (Madina)**, tayyor **ruscha (Svetlana)** yoki telefon ovozi (TTS) — foydalanuvchi tanlaydi. "Ovozli eslatma"ni o'chirsa ham **"ting" doim chaladi**.
 - **Eslatma ketma-ketligi** (har bir namoz uchun alohida yoqiladi/o'chiriladi):
   1. namozdan **5 daqiqa oldin**: avval `ting` mp3, keyin o'zbekcha ovoz: “Peshin namoziga besh daqiqa qoldi. Iltimos, o'qib oling.”
   2. namoz vaqtida: mp3 + “Peshin vaqti bo'ldi, kechiktirmang.” (Bomdod: “Bomdod vaqti bo'ldi. Namozga turing.”)
@@ -24,7 +26,7 @@ Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, ikonkaga 
 - **Tahajjud**: ixtiyoriy kunlarni belgilash, har kun uchun vaqt, haftalik takrorlanish, tunning oxirgi uchdan biri hisobi, ovoz/vibratsiya.
 - **Taqvim**: Milodiy va Hijriy (Um al-Qura, ±2 kun moslash), namoz tarixi va shaxsiy eslatmalar.
 - **Tarix va statistika**: kunlik/haftalik/oylik — faqat foydalanuvchi belgilagan ma'lumotlar asosida (belgilanmagan = “belgilanmagan”, “o'qilmagan” emas).
-- **Suralar**: Oyatal Kursi, Fotiha, Ixlos, Falaq va Nos — arabcha matn, lotincha o'qilishi va qisqa ma'nosi.
+- **Suralar**: Oyatal Kursi, Fotiha, Ixlos, Falaq va Nos — arabcha matn, o'qilishi va ma'nosi **O'zbekiston Musulmonlari idorasi rasmiy sayti (muslim.uz)** matnidan; lotin/kirillda ko'rsatiladi.
 - **Muloyim ohang** (standart yoqilgan): qisqa va yumshoq "ting", asta kuchayadigan budilnik, yengil tebranish, muloyim matnlar; ovoz balandligi sozlanadi. O'chirib, dastlabki qisqa matnlarga qaytish mumkin.
 - **Yangilanish**: GitHub Releases orqali tekshiradi, yangi versiya raqami + o'zgarishlar + “Yuklab olish va o'rnatish”.
 
@@ -50,11 +52,11 @@ Ovozli xabar telefondagi Text-to-Speech dvigateli bilan o'qiladi. O'zbekcha ovoz
 
 ## Namoz vaqti manbalari haqida
 
-- **islom.uz**: islom.uz taqvimi ochiq `islomapi.uz` API (`/api/monthly?region=<shahar>&month=<oy>`, 89 ta shahar) orqali olinadi (`core/.../Sources.kt`). Eng yaqin shahar tanlanadi va foydalanuvchi uzunligiga qarab har 1° uchun 4 daqiqa moslanadi. Faqat “O'zbekiston” usuli va Hanafiy Asr tanlanganda ishlatiladi. Har bir kun qurilmada hisoblangan vaqtdan 25 daqiqadan ko'p farq qilsa, rad etiladi.
-- **fatvo.uz**: foydalanilmaydi (ochiq va barqaror namoz vaqti API'si topilmadi).
-- Aladhan va qurilmada hisoblash zaxira sifatida ishlaydi.
+- **islom.uz**: sayt dasturlarga Cloudflare tekshiruvi ko'rsatadi, uchinchi tomon `islomapi.uz` xizmati esa tekshirilganda ishlamayotgan edi (502). Ilova baribir har safar avval undan olishga urinadi (`core/.../Sources.kt`): xizmat qaytsa, shahar jadvali ishlatiladi.
+- **muslim.uz**: bosh sahifasida bugungi (Toshkent) rasmiy vaqtlar bor. Ilova uni har kuni o'qiydi va o'z hisobimiz bilan farqni (har bir vaqt uchun daqiqada) saqlaydi; keyin shu moslama joylashuvingiz uchun aniq hisoblangan vaqtlarga qo'shiladi (`core/.../MuslimUz.kt`). Sayt 2026-10-18 da Toshkent uchun o'lchangan: Quyosh/Peshin/Asr hisobimiz bilan aynan mos, Bomdod −3, Shom +4, Xufton +3 daqiqa — sinxronlanguncha shu standart moslama ishlatiladi. Sayt tuzilmasi o'zgarsa, parser `null` qaytaradi va oxirgi moslama saqlanadi.
+- Boshqa hisoblash usullarida: Aladhan API → qurilmada hisoblash.
 
-> **Eslatma:** ishlab chiqish muhitida `islom.uz`/`islomapi.uz` ga ulanish bloklangan edi, shuning uchun jonli server bilan sinalmagan. Javob tuzilishi API'ning ochiq manba kodidan olingan (`zero8d/namozvatqiapi`: `times.tong_saharlik / quyosh / peshin / asr / shom_iftor / hufton`) va parser shu tuzilishdagi ma'lumot bilan testdan o'tgan. API xizmati uchinchi tomon loyihasi — ishlamay qolsa, ilova o'zi Aladhan/qurilmadagi hisobga o'tadi. Ilovani birinchi ochganingizda bosh sahifadagi **“Manba”** satrini tekshiring: u `islom.uz` deb chiqsa — ulanish ishlayapti; boshqa yozuv chiqsa, zaxira manba ishlatilmoqda. Format farq qilsa, faqat `IslomUzSource` (≈50 qator) tuzatiladi.
+> **Eslatma:** boshqa shaharlar uchun idora vaqtlari mavjud emas (sayt faqat Toshkentni ko'rsatadi); shuning uchun ular uchun joylashuvga aniq hisoblangan vaqtga Toshkentdan olingan moslama qo'shiladi — bu yaqinlashtirish, ammo odatda 1–2 daqiqa ichida.
 
 ## Yig'ish (build)
 

@@ -174,12 +174,26 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
                     vm.updateSettings(false) { it.copy(voiceEnabled = on) }
                 }
                 DropdownRow(
-                    "Ovozli xabar tili", ttsLabel(s.ttsLang),
+                    "Ovoz turi", voiceSourceLabel(s.voiceSource),
+                    listOf(
+                        "uz" to voiceSourceLabel("uz"), "ru" to voiceSourceLabel("ru"), "tts" to voiceSourceLabel("tts"),
+                    ),
+                ) { v -> vm.updateSettings(false) { it.copy(voiceSource = v) } }
+                if (s.voiceSource == "tts" || !s.gentle) Text(
+                    if (!s.gentle) "Tayyor ovoz muloyim matnlar uchun yozilgan; «Muloyim ohang» o'chiq bo'lsa telefon ovozi ishlatiladi."
+                    else "Telefon ovozi ishlatiladi: tilni quyida tanlang.",
+                    style = Type.Caption, modifier = Modifier.padding(top = 4.dp),
+                )
+                if (s.voiceSource == "tts" || !s.gentle) DropdownRow(
+                    "Telefon ovozi tili", ttsLabel(s.ttsLang),
                     listOf("auto" to "Avtomatik (o'zbek → turk → rus)", "uz" to "O'zbekcha", "tr" to "Turkcha (muqobil)", "ru" to "Ruscha (muqobil)", "en" to "Inglizcha (muqobil)"),
                 ) { v -> vm.updateSettings(false) { it.copy(ttsLang = v) } }
                 Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GlassButton("Ovozni sinash", {
-                        SpeechService.speak(ctx, PrayerTexts.mainText(Prayer.DHUHR, LocalDate.of(2026, 1, 5), s.gender, s.gentle), withVoice = s.voiceEnabled)
+                        SpeechService.speak(
+                            ctx, PrayerTexts.mainText(Prayer.DHUHR, LocalDate.of(2026, 1, 5), s.gender, s.gentle), withVoice = s.voiceEnabled,
+                            clip = if (s.gentle) "main_dhuhr" else null,
+                        )
                     }, small = true, filled = false, modifier = Modifier.weight(1f))
                     GlassButton("Ovoz ma'lumoti", { Perms.openTtsSettings(ctx) }, small = true, filled = false, modifier = Modifier.weight(1f))
                 }
@@ -286,6 +300,12 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
     if (fajrSoundDialog) SoundPickerDialog(ctx, s.fajrSound, { id ->
         vm.updateSettings(false) { it.copy(fajrSound = id) }; fajrSoundDialog = false
     }, { fajrSoundDialog = false })
+}
+
+private fun voiceSourceLabel(code: String) = when (code) {
+    "ru" -> "Ruscha — Svetlana (tayyor ovoz)"
+    "tts" -> "Telefon ovozi (TTS)"
+    else -> "O'zbekcha — Madina (tayyor ovoz)"
 }
 
 private fun ttsLabel(code: String) = when (code) {
