@@ -12,23 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: So'rovlar
+      - name: muslim.uz tekshiruvi
         run: |
           set +e
+          python3 voicepack/probe_muslim.py
           mkdir -p out
-          UA="Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"
-          {
-            echo "== islom.uz bosh sahifa (mobil UA)"
-            curl -sS -L -m 30 -A "$UA" -o out/islom_home.html -w 'HTTP %{http_code} size=%{size_download}\n' https://islom.uz/
-            echo "== islomapi.uz (3 urinish)"
-            for i in 1 2 3; do curl -sS -m 30 -o out/api$i.json -w "try $i: HTTP %{http_code} size=%{size_download}\n" "https://islomapi.uz/api/monthly?region=Andijon&month=10"; sleep 3; done
-            echo "== islomapi.uz present/day"
-            curl -sS -m 30 -o out/present.json -w 'HTTP %{http_code} size=%{size_download}\n' "https://islomapi.uz/api/present/day?region=Andijon"
-            echo "== aladhan calendar"
-            curl -sS -L -m 30 -o out/aladhan.json -w 'HTTP %{http_code} size=%{size_download}\n' "https://api.aladhan.com/v1/calendar/2026/10?latitude=40.75&longitude=72.31&method=99&methodSettings=15,null,15&school=1&timezonestring=Asia/Tashkent"
-          } > out/log.txt 2>&1
-          cat out/log.txt
-          head -c 1500 out/api1.json > out/api1_head.txt 2>/dev/null
       - name: diag branch
         run: |
           mkdir -p "$RUNNER_TEMP/d" && cp -r out/. "$RUNNER_TEMP/d/"
