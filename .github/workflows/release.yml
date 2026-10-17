@@ -1,6 +1,8 @@
 name: Release
 
-# Yangi versiya chiqarish:  git tag v1.0.1 && git push origin v1.0.1
+# Yangi versiya chiqarish (ikki yo'l):
+#   1) git tag v1.0.1 && git push origin v1.0.1
+#   2) GitHub -> Actions -> Release -> "Run workflow" -> tag: v1.0.1 (teg avtomatik yaratiladi)
 on:
   push:
     tags: ["v*"]
@@ -77,4 +79,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$TAG" "NamozVaqtlarim-${TAG}.apk" "NamozVaqtlarim-${TAG}.apk.sha256" \
-            --title "Namoz Vaqtlarim ${TAG}" --generate-notes --verify-tag
+            --title "Namoz Vaqtlarim ${TAG}" --generate-notes --target "${GITHUB_SHA}"
