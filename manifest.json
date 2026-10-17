@@ -1,0 +1,74 @@
+[
+ {
+  "file": "01-uzbek-Madina-ayol.mp3",
+  "voice": "uz-UZ-MadinaNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "02-uzbek-Madina-ayol-sekin.mp3",
+  "voice": "uz-UZ-MadinaNeural",
+  "rate": "-22%",
+  "ok": true
+ },
+ {
+  "file": "03-uzbek-Sardor-erkak.mp3",
+  "voice": "uz-UZ-SardorNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "04-turk-Emel-ayol.mp3",
+  "voice": "tr-TR-EmelNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "05-turk-Ahmet-erkak.mp3",
+  "voice": "tr-TR-AhmetNeural",
+  "rate": "-10%",
+  "ok": false
+ },
+ {
+  "file": "06-qozoq-Aigul-ayol.mp3",
+  "voice": "kk-KZ-AigulNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "07-qozoq-Daulet-erkak.mp3",
+  "voice": "kk-KZ-DauletNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "08-ozarbayjon-Banu-ayol.mp3",
+  "voice": "az-AZ-BanuNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "09-ozarbayjon-Babek-erkak.mp3",
+  "voice": "az-AZ-BabekNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "10-arab-Zariyah-ayol.mp3",
+  "voice": "ar-SA-ZariyahNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "11-arab-Hamed-erkak.mp3",
+  "voice": "ar-SA-HamedNeural",
+  "rate": "-10%",
+  "ok": true
+ },
+ {
+  "file": "12-rus-Svetlana-ayol.mp3",
+  "voice": "ru-RU-SvetlanaNeural",
+  "rate": "-10%",
+  "ok": true
+ }
+]
