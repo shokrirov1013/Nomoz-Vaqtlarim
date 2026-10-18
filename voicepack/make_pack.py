@@ -14,6 +14,9 @@ data = json.loads((ROOT / "voicepack/phrases.json").read_text(encoding="utf-8"))
 
 async def one(lang: str, key: str, text: str, voice: str) -> bool:
     path = RAW / f"v_{lang}_{key}.mp3"
+    # Mavjud klip qayta yozilmaydi (faqat yangilari yaratiladi); hammasini qayta yozish uchun: --force
+    if path.exists() and path.stat().st_size > 2000 and "--force" not in sys.argv:
+        return True
     for attempt in range(3):
         try:
             await edge_tts.Communicate(text, voice, rate=data["rate"], pitch=data["pitch"], volume=data["volume"]).save(str(path))

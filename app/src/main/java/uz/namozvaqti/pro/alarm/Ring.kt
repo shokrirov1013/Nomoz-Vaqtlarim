@@ -83,6 +83,18 @@ class RingService : Service() {
         val type = if (Build.VERSION.SDK_INT >= 29) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK else 0
         ServiceCompat.startForeground(this, Notifications.ID_RING, n, type)
 
+        // "Boshqa ilovalar ustida ko'rsatish" ruxsati bo'lsa, budilnik ekrani hamma ilovalar ustida darhol ochiladi.
+        if (s.popupReminder && android.provider.Settings.canDrawOverlays(this)) {
+            try {
+                startActivity(
+                    Intent(this, AlarmActivity::class.java).putExtra(Extra.KIND, kind.key)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                )
+            } catch (e: Exception) {
+                Log.w(TAG, "budilnik ekranini ochib bo'lmadi: ${e.message}")
+            }
+        }
+
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
         wake = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "namoz:ring").apply { acquire(5 * 60_000L) }
 

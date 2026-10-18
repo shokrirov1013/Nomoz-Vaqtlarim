@@ -27,6 +27,16 @@ object Perms {
     fun fullScreen(ctx: Context): Boolean =
         Build.VERSION.SDK_INT < 34 || (ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).canUseFullScreenIntent()
 
+    /** "Boshqa ilovalar ustida ko'rsatish": eslatma ekrani hamma ilovalar (o'yin, video, brauzer) ustidan ochilishi uchun. */
+    fun overlay(ctx: Context): Boolean = Settings.canDrawOverlays(ctx)
+
+    fun openOverlaySettings(ctx: Context) {
+        ctx.startActivity(
+            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${ctx.packageName}"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+    }
+
     fun needsNotificationRuntimePermission(ctx: Context): Boolean =
         Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED

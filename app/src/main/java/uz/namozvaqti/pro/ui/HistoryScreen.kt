@@ -64,19 +64,19 @@ fun HistoryScreen(vm: AppViewModel) {
         GlassCard(Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.clickableNoRipple { selectedStr = selected.minusDays(1).toString() }.padding(8.dp)) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi kun", tint = Glass.GoldBright)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi kun", tint = Glass.PinkSoft)
                 }
                 Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(Fmt.weekday(selected.dayOfWeek) + if (selected == today) " (bugun)" else "", style = Type.BodyBold)
                     Text(Fmt.gregorian(selected), style = Type.Caption)
-                    Text(Fmt.hijri(selected, s.hijriAdjust), style = Type.Caption.copy(color = Glass.GoldBright))
+                    Text(Fmt.hijri(selected, s.hijriAdjust), style = Type.Caption.copy(color = Glass.PinkSoft))
                 }
                 Box(
                     Modifier.clickableNoRipple { if (selected.isBefore(today)) selectedStr = selected.plusDays(1).toString() }.padding(8.dp),
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight, "Keyingi kun",
-                        tint = if (selected.isBefore(today)) Glass.GoldBright else Glass.Mint,
+                        tint = if (selected.isBefore(today)) Glass.PinkSoft else Glass.Lilac,
                     )
                 }
             }
@@ -127,10 +127,10 @@ private fun StatsCard(title: String, stats: PeriodStats) {
     GlassCard(Modifier.fillMaxWidth()) {
         Text(title, style = Type.Caption)
         Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 4.dp)) {
-            Text("${stats.done}", style = Type.Big.copy(color = Glass.GoldBright))
+            Text("${stats.done}", style = Type.Big.copy(color = Glass.PinkSoft))
             Text(" / ${stats.slots} bajarildi", style = Type.Body, modifier = Modifier.padding(bottom = 8.dp))
             Box(Modifier.weight(1f))
-            Text("${stats.percentDone}%", style = Type.H2.copy(color = Glass.GoldBright))
+            Text("${stats.percentDone}%", style = Type.H2.copy(color = Glass.PinkSoft))
         }
         ProgressBar(stats.percentDone / 100f)
         Text("Belgilanmagan: ${stats.unmarked}", style = Type.Caption, modifier = Modifier.padding(top = 6.dp, bottom = 8.dp))

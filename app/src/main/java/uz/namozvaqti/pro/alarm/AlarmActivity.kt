@@ -76,7 +76,7 @@ class AlarmActivity : ComponentActivity() {
                     ) {
                         CrescentMosqueArt(Modifier.size(width = 140.dp, height = 120.dp))
                         Spacer(Modifier.height(16.dp))
-                        Text(Fmt.time(LocalTime.now()), style = Type.Big.copy(color = Glass.GoldBright))
+                        Text(Fmt.time(LocalTime.now()), style = Type.Big.copy(color = Glass.PinkSoft))
                         Text(kind.title, style = Type.H1)
                         val st = ServiceLocator.get(app).settings.value
                         Text(

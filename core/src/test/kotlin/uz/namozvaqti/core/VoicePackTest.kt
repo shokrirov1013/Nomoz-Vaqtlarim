@@ -28,7 +28,7 @@ class VoicePackTest {
     @Test fun russianHasSameKeys() {
         val uz = json.getJSONObject("uz").keySet(); val ru = json.getJSONObject("ru").keySet()
         assertEquals(uz, ru)
-        assertEquals(26, uz.size)
+        assertEquals(27, uz.size)
         assertTrue(json.getJSONObject("ru").keySet().all { json.getJSONObject("ru").getString(it).isNotBlank() })
     }
 

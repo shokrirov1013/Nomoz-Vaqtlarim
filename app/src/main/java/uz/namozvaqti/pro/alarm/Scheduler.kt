@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import uz.namozvaqti.core.Juma
 import uz.namozvaqti.core.Prayer
 import uz.namozvaqti.core.ReminderEvent
 import uz.namozvaqti.core.ReminderPlanner
@@ -31,6 +32,7 @@ object Scheduler {
     private const val CODE_TAHAJJUD = 1_200_000_000
     private const val CODE_SNOOZE = 1_300_000_000
     private const val CODE_DAILY = 1_400_000_000
+    private const val CODE_JUMA = 1_500_000_000
 
     private fun am(ctx: Context) = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private fun millis(at: LocalDateTime) = at.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -51,6 +53,7 @@ object Scheduler {
         }
         scheduleFajrAlarm(ctx)
         scheduleTahajjud(ctx)
+        scheduleJuma(ctx)
         scheduleDaily(ctx)
         sl.db.reminderState().deleteBefore(today.minusDays(3).toString())
         Log.i(TAG, "rescheduled at $now")
@@ -152,6 +155,30 @@ object Scheduler {
         val schedule = sl.db.tahajjud().all().filter { it.enabled }.associate { it.dayOfWeek to LocalTime.of(it.hour, it.minute) }
         val next = TahajjudRules.nextOccurrence(LocalDateTime.now(), schedule) ?: return@withContext
         setClock(ctx, next, ringPi(ctx, CODE_TAHAJJUD, RingKind.TAHAJJUD, next, next.toLocalDate(), PendingIntent.FLAG_UPDATE_CURRENT)!!)
+    }
+
+    // ---------------------------------------------------------------- Juma tabrigi (har juma 13:15)
+    private fun jumaPi(ctx: Context, at: LocalDateTime?, flag: Int): PendingIntent? {
+        val intent = Intent(ctx, ReminderReceiver::class.java).setAction(Act.JUMA)
+        if (at != null) intent.putExtra(Extra.AT, at.toString())
+        return PendingIntent.getBroadcast(ctx, CODE_JUMA, intent, flag or IMM)
+    }
+
+    /** Keyingi juma 13:15 ga alarm qo'yadi (o'chirilgan bo'lsa bekor qiladi). Har safar ishga tushganda keyingi haftaga qayta qo'yiladi. */
+    fun scheduleJuma(ctx: Context) {
+        jumaPi(ctx, null, PendingIntent.FLAG_NO_CREATE)?.let { am(ctx).cancel(it); it.cancel() }
+        val s = ServiceLocator.get(ctx).settings.value
+        if (!s.onboardingDone || !s.jumaGreeting) return
+        val at = Juma.next(LocalDateTime.now())
+        val pi = jumaPi(ctx, at, PendingIntent.FLAG_UPDATE_CURRENT) ?: return
+        val manager = am(ctx)
+        val t = millis(at)
+        try {
+            if (canScheduleExact(ctx)) manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, t, pi)
+            else manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, t, pi)
+        } catch (se: SecurityException) {
+            manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, t, pi)
+        }
     }
 
     // ---------------------------------------------------------------- keyinga surish

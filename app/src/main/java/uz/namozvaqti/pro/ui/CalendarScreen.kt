@@ -93,11 +93,11 @@ fun CalendarScreen(vm: AppViewModel) {
                 Box(Modifier.clickableNoRipple {
                     if (!hijriMode) { val p = YearMonth.of(gy, gm).minusMonths(1); gy = p.year; gm = p.monthValue }
                     else { val (y, m) = HijriCalendar.prevMonth(hy, hm); hy = y; hm = m }
-                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi oy", tint = Glass.GoldBright) }
+                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Oldingi oy", tint = Glass.PinkSoft) }
                 Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     if (!hijriMode) {
                         Text("${Fmt.months[gm - 1]} $gy", style = Type.H2)
-                        Text(hijriRangeLabel(cells, s.hijriAdjust), style = Type.Caption.copy(color = Glass.GoldBright))
+                        Text(hijriRangeLabel(cells, s.hijriAdjust), style = Type.Caption.copy(color = Glass.PinkSoft))
                     } else {
                         Text("${HijriCalendar.monthNames[hm - 1]} $hy", style = Type.H2)
                         Text(gregorianRangeLabel(cells), style = Type.Caption)
@@ -106,7 +106,7 @@ fun CalendarScreen(vm: AppViewModel) {
                 Box(Modifier.clickableNoRipple {
                     if (!hijriMode) { val p = YearMonth.of(gy, gm).plusMonths(1); gy = p.year; gm = p.monthValue }
                     else { val (y, m) = HijriCalendar.nextMonth(hy, hm); hy = y; hm = m }
-                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Keyingi oy", tint = Glass.GoldBright) }
+                }.padding(8.dp)) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Keyingi oy", tint = Glass.PinkSoft) }
             }
             Row(Modifier.fillMaxWidth().padding(top = 6.dp)) {
                 Fmt.weekdaysShort.forEach {
@@ -162,7 +162,7 @@ private fun gregorianRangeLabel(cells: List<Cell>): String {
 }
 
 private val CellShape = RoundedCornerShape(14.dp)
-private val SelectedBrush = Brush.linearGradient(listOf(Glass.GoldBright, Glass.GoldDeep))
+private val SelectedBrush = Brush.linearGradient(listOf(Glass.PinkSoft, Glass.Magenta))
 
 @Composable
 private fun DayCell(
@@ -179,13 +179,13 @@ private fun DayCell(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        val fg = if (isSelected) Glass.OnGold else Glass.Ink
-        val sub = if (isSelected) Glass.OnGold.copy(alpha = 0.75f) else Glass.GoldBright.copy(alpha = 0.7f)
+        val fg = if (isSelected) Glass.OnPink else Glass.Ink
+        val sub = if (isSelected) Glass.OnPink.copy(alpha = 0.75f) else Glass.PinkSoft.copy(alpha = 0.7f)
         Text("${cell.primary}", style = Type.BodyBold.copy(fontSize = 16.sp, color = fg))
         Text("${cell.secondary}", style = Type.Caption.copy(fontSize = 10.sp, color = sub))
         Row(Modifier.height(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (doneCount > 0) Text("$doneCount/5", style = Type.Caption.copy(fontSize = 9.sp, color = if (isSelected) Glass.OnGold else Glass.Emerald))
-            if (hasNote) Box(Modifier.padding(start = 2.dp).size(5.dp).background(if (isSelected) Glass.OnGold else Glass.Gold, RoundedCornerShape(50)))
+            if (doneCount > 0) Text("$doneCount/5", style = Type.Caption.copy(fontSize = 9.sp, color = if (isSelected) Glass.OnPink else Glass.Violet))
+            if (hasNote) Box(Modifier.padding(start = 2.dp).size(5.dp).background(if (isSelected) Glass.OnPink else Glass.Pink, RoundedCornerShape(50)))
         }
     }
 }
@@ -197,7 +197,7 @@ private fun DayDetails(
     var text by remember(date) { mutableStateOf("") }
     GlassCard(Modifier.fillMaxWidth()) {
         Text(Fmt.gregorianFull(date), style = Type.H2)
-        Text(Fmt.hijri(date, adjust), style = Type.Caption.copy(color = Glass.GoldBright, fontSize = 14.sp))
+        Text(Fmt.hijri(date, adjust), style = Type.Caption.copy(color = Glass.PinkSoft, fontSize = 14.sp))
         Box(Modifier.height(8.dp))
         Text("Namozlar", style = Type.BodyBold)
         Prayer.entries.forEach { p ->
@@ -206,7 +206,7 @@ private fun DayDetails(
                 GlassTick(p in done, size = 22.dp)
                 Text(
                     if (p in done) "  Bajarildi" else "  Belgilanmagan",
-                    style = Type.Caption.copy(color = if (p in done) Glass.GoldBright else Glass.InkSoft, fontSize = 14.sp),
+                    style = Type.Caption.copy(color = if (p in done) Glass.PinkSoft else Glass.InkSoft, fontSize = 14.sp),
                 )
             }
         }

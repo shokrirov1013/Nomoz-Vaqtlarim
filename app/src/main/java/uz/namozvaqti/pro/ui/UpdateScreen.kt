@@ -34,7 +34,7 @@ fun UpdateScreen(vm: AppViewModel) {
         Text("Yangilanish", style = Type.H1, modifier = Modifier.padding(top = 4.dp))
         GlassCard(Modifier.fillMaxWidth()) {
             Text("Joriy versiya", style = Type.Caption)
-            Text(BuildConfig.VERSION_NAME, style = Type.Big.copy(color = Glass.GoldBright))
+            Text(BuildConfig.VERSION_NAME, style = Type.Big.copy(color = Glass.PinkSoft))
             Text("GitHub: ${BuildConfig.GITHUB_REPO}", style = Type.Caption)
         }
 
@@ -58,7 +58,7 @@ fun UpdateScreen(vm: AppViewModel) {
             is UpdateUi.Available -> {
                 GlassCard(Modifier.fillMaxWidth(), tint = Glass.Tint) {
                     Text("Yangi versiya mavjud", style = Type.Caption)
-                    Text(st.release.version, style = Type.Big.copy(color = Glass.GoldBright))
+                    Text(st.release.version, style = Type.Big.copy(color = Glass.PinkSoft))
                     if (st.release.sizeBytes > 0) Text("Hajmi: %.1f MB".format(st.release.sizeBytes / 1_048_576.0), style = Type.Caption)
                 }
                 GlassCard(Modifier.fillMaxWidth()) {

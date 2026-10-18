@@ -8,12 +8,15 @@ object Extra {
     const val KIND = "kind"
     const val TEXT = "text"
     const val CLIP = "clip"
+    const val NAME = "name"
+    const val TITLE = "title"
 }
 
 object Act {
     const val REMINDER = "uz.namozvaqti.pro.REMINDER"
     const val RING = "uz.namozvaqti.pro.RING"
     const val DAILY = "uz.namozvaqti.pro.DAILY"
+    const val JUMA = "uz.namozvaqti.pro.JUMA"
     const val MARK_DONE = "uz.namozvaqti.pro.MARK_DONE"
     const val STOP_RING = "uz.namozvaqti.pro.STOP_RING"
     const val SNOOZE_RING = "uz.namozvaqti.pro.SNOOZE_RING"

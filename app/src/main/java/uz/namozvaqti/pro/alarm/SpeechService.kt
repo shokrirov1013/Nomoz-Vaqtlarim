@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.media.AudioAttributes
+import android.media.AudioDeviceInfo
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -24,12 +25,18 @@ import uz.namozvaqti.pro.ServiceLocator
 import java.util.Locale
 
 /**
- * Eslatma ovozi: avval foydalanuvchi bergan "ting" mp3, keyin o'zbekcha ovozli xabar (TTS).
+ * Eslatma ovozi: avval foydalanuvchi bergan "ting" mp3, keyin ovozli xabar (tayyor ovoz paketi yoki telefon ovozi).
  * Foreground xizmat — ekran o'chiq va Doze rejimida ham to'liq ijro etiladi.
+ *
+ * Ovoz HAR QANDAY holatda eshitilishi kerak (jim rejim, ovoz 0, naushnik):
+ *  - naushnik/Bluetooth ulangan bo'lsa MEDIA oqimi ishlatiladi (ALARM/NOTIFICATION oqimi naushnikka yo'nalmasdan jim qolardi),
+ *    aks holda ALARM oqimi (jim rejimda ham chaladi);
+ *  - tanlangan oqim ovozi 0 bo'lsa vaqtincha ko'tariladi va tugagach qaytariladi;
+ *  - audio fokus qisqa muddatga olinadi: musiqa to'xtab, eslatmadan keyin o'zi davom etadi.
  */
 class SpeechService : Service() {
     private val handler = Handler(Looper.getMainLooper())
-    private class Item(val text: String, val clip: String?)
+    private class Item(val text: String, val clip: String?, val preName: String)
     private val queue = ArrayDeque<Item>()
     private var busy = false
     private var itemId = 0
@@ -37,9 +44,12 @@ class SpeechService : Service() {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
     private var voiceOk = false
-    private var pendingSpeak: String? = null
+    private var pendingSpeak: Pair<String, () -> Unit>? = null
     private var player: MediaPlayer? = null
     private var focus: AudioFocusRequest? = null
+
+    private var headset = false
+    private var savedVolume: Pair<Int, Int>? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -49,7 +59,7 @@ class SpeechService : Service() {
             handler.post {
                 ttsReady = true
                 if (status == TextToSpeech.SUCCESS) setupVoice()
-                pendingSpeak?.let { pendingSpeak = null; doSpeak(it) }
+                pendingSpeak?.let { (text, done) -> pendingSpeak = null; speakText(text, done) }
             }
         }
     }
@@ -66,18 +76,76 @@ class SpeechService : Service() {
         ServiceCompat.startForeground(this, Notifications.ID_PLAYBACK, n, type)
 
         // Bo'sh matn = faqat "ting" (ovozli xabar o'chirilgan).
-        intent?.getStringExtra(Extra.TEXT)?.let { queue.addLast(Item(it, intent.getStringExtra(Extra.CLIP))) }
+        intent?.getStringExtra(Extra.TEXT)?.let {
+            queue.addLast(Item(it, intent.getStringExtra(Extra.CLIP), intent.getStringExtra(Extra.NAME).orEmpty()))
+        }
         if (!busy) playNext()
         return START_NOT_STICKY
     }
 
-    private fun attrs(speech: Boolean): AudioAttributes {
-        val silentOverride = ServiceLocator.get(this).settings.value.playInSilentMode
-        return AudioAttributes.Builder()
-            .setUsage(if (silentOverride) AudioAttributes.USAGE_ALARM else AudioAttributes.USAGE_NOTIFICATION_EVENT)
+    // ------------------------------------------------------------------ audio holati
+
+    /** Simli/Bluetooth/USB naushnik yoki eshitish apparati ulanganmi (qo'ng'iroq uchun SCO hisoblanmaydi). */
+    private fun headsetConnected(): Boolean {
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        return try {
+            am.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any { d ->
+                when (d.type) {
+                    AudioDeviceInfo.TYPE_WIRED_HEADSET, AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+                    AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_USB_HEADSET -> true
+                    else -> Build.VERSION.SDK_INT >= 31 && d.type in 26..27 // BLE headset / BLE speaker
+                }
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun stream() = if (headset) AudioManager.STREAM_MUSIC else AudioManager.STREAM_ALARM
+
+    private fun attrs(speech: Boolean): AudioAttributes =
+        AudioAttributes.Builder()
+            .setUsage(if (headset) AudioAttributes.USAGE_MEDIA else AudioAttributes.USAGE_ALARM)
             .setContentType(if (speech) AudioAttributes.CONTENT_TYPE_SPEECH else AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
+
+    /** Oqim ovozi butunlay o'chiq (0) bo'lsa eslatma jim qolmasligi uchun vaqtincha o'rtacha darajaga ko'taradi. */
+    private fun ensureAudible() {
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val st = stream()
+        try {
+            val cur = am.getStreamVolume(st)
+            if (cur == 0) {
+                val max = am.getStreamMaxVolume(st)
+                if (savedVolume == null) savedVolume = st to cur
+                am.setStreamVolume(st, maxOf(1, (max * 0.4f).toInt()), 0)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "ovozni ko'tarib bo'lmadi: ${e.message}")
+        }
     }
+
+    private fun restoreVolume() {
+        val saved = savedVolume ?: return
+        savedVolume = null
+        try {
+            (getSystemService(Context.AUDIO_SERVICE) as AudioManager).setStreamVolume(saved.first, saved.second, 0)
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun requestFocus() {
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        focus?.let { am.abandonAudioFocusRequest(it) }
+        val req = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+            .setAudioAttributes(attrs(true))
+            .setOnAudioFocusChangeListener { }
+            .build()
+        focus = req
+        am.requestAudioFocus(req)
+    }
+
+    // ------------------------------------------------------------------ navbat
 
     private fun playNext() {
         val item = queue.removeFirstOrNull()
@@ -85,19 +153,28 @@ class SpeechService : Service() {
             finishAll()
             return
         }
-        val text = item.text
         busy = true
         val id = ++itemId
+        headset = headsetConnected()
+        ensureAudible()
         requestFocus()
         // Qotib qolishdan himoya: bir xabar uchun eng ko'pi 45 soniya.
         handler.postDelayed({ if (id == itemId && busy) itemDone(id) }, 45_000)
         playChime {
             if (id != itemId) return@playChime
-            when {
-                text.isEmpty() -> itemDone(id)
-                !playClip(item.clip, id) -> speak(text, id)
-            }
+            if (item.text.isEmpty()) itemDone(id) else playVoice(item, id)
         }
+    }
+
+    /** Ovozli xabar: tayyor klip bo'lsa (oldidan ism TTS bilan), bo'lmasa to'liq matn telefon ovozi bilan. */
+    private fun playVoice(item: Item, id: Int) {
+        val res = clipResource(item.clip)
+        if (res == 0) {
+            speakText(item.text) { itemDone(id) }
+            return
+        }
+        val clip = { if (id == itemId && !playClip(res, id)) speakText(item.text) { itemDone(id) } }
+        if (item.preName.isNotBlank()) speakText(item.preName) { clip() } else clip()
     }
 
     /**
@@ -148,16 +225,16 @@ class SpeechService : Service() {
         }
     }
 
-    /**
-     * Tayyor ovoz paketidan (res/raw/v_<til>_<kalit>.mp3) ijro etadi. Paket yoki fayl bo'lmasa false
-     * qaytaradi — shunda telefon ovozi (TTS) ishlatiladi.
-     */
-    private fun playClip(clip: String?, id: Int): Boolean {
-        if (clip == null) return false
+    /** Tayyor ovoz paketi fayli (res/raw/v_<til>_<kalit>.mp3) resursi; paket bo'lmasa yoki telefon ovozi tanlangan bo'lsa 0. */
+    private fun clipResource(clip: String?): Int {
+        if (clip == null) return 0
         val st = ServiceLocator.get(this).settings.value
-        if (st.voiceSource != "uz" && st.voiceSource != "ru") return false
-        val res = resources.getIdentifier("v_${st.voiceSource}_$clip", "raw", packageName)
-        if (res == 0) return false
+        if (st.voiceSource != "uz" && st.voiceSource != "ru") return 0
+        return resources.getIdentifier("v_${st.voiceSource}_$clip", "raw", packageName)
+    }
+
+    private fun playClip(res: Int, id: Int): Boolean {
+        val st = ServiceLocator.get(this).settings.value
         return try {
             val mp = MediaPlayer()
             player = mp
@@ -177,26 +254,23 @@ class SpeechService : Service() {
         }
     }
 
-    private fun speak(text: String, id: Int) {
+    // ------------------------------------------------------------------ telefon ovozi (TTS)
+
+    private fun speakText(text: String, whenDone: () -> Unit) {
         if (!ttsReady) {
-            pendingSpeak = text
+            pendingSpeak = text to whenDone
             return
         }
-        doSpeak(text)
-    }
-
-    private fun doSpeak(text: String) {
         val engine = tts
         if (engine == null || !voiceOk) {
-            itemDone(itemId)
+            whenDone()
             return
         }
-        val id = itemId
         engine.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
             override fun onStart(utteranceId: String?) {}
-            override fun onDone(utteranceId: String?) { handler.post { itemDone(id) } }
+            override fun onDone(utteranceId: String?) { handler.post { whenDone() } }
             @Deprecated("Deprecated in Java")
-            override fun onError(utteranceId: String?) { handler.post { itemDone(id) } }
+            override fun onError(utteranceId: String?) { handler.post { whenDone() } }
         })
         engine.setAudioAttributes(attrs(true))
         val st = ServiceLocator.get(this).settings.value
@@ -205,8 +279,8 @@ class SpeechService : Service() {
         val params = android.os.Bundle().apply {
             putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, (st.reminderVolume / 100f).coerceIn(0.1f, 1f))
         }
-        val r = engine.speak(text, TextToSpeech.QUEUE_FLUSH, params, "u$id")
-        if (r != TextToSpeech.SUCCESS) itemDone(id)
+        val r = engine.speak(text, TextToSpeech.QUEUE_FLUSH, params, "u${itemId}_${SystemClock.uptimeMillis()}")
+        if (r != TextToSpeech.SUCCESS) whenDone()
     }
 
     private fun itemDone(id: Int) {
@@ -241,20 +315,11 @@ class SpeechService : Service() {
         Log.w(TAG, "mos TTS ovozi topilmadi")
     }
 
-    private fun requestFocus() {
-        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val req = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
-            .setAudioAttributes(attrs(true))
-            .setOnAudioFocusChangeListener { }
-            .build()
-        focus = req
-        am.requestAudioFocus(req)
-    }
-
     private fun finishAll() {
         val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         focus?.let { am.abandonAudioFocusRequest(it) }
         focus = null
+        restoreVolume()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -263,19 +328,26 @@ class SpeechService : Service() {
         handler.removeCallbacksAndMessages(null)
         player?.release(); player = null
         tts?.stop(); tts?.shutdown(); tts = null
+        restoreVolume()
         super.onDestroy()
     }
 
     companion object {
         private const val TAG = "SpeechService"
 
-        /** Ovozli xabarni navbatga qo'yadi. Foreground xizmat boshlanmasa, bildirishnoma o'zi qoladi. */
-        /** Doim "ting" chaladi; [withVoice] = false bo'lsa, nutq (ovozli xabar) o'qilmaydi. */
-        fun speak(ctx: Context, text: String, withVoice: Boolean = true, clip: String? = null): Boolean =
+        /**
+         * Ovozli xabarni navbatga qo'yadi. Doim "ting" chaladi; [withVoice] = false bo'lsa nutq o'qilmaydi.
+         * [preName] bo'sh bo'lmasa, tayyor klipdan oldin shu ism telefon ovozi bilan o'qiladi (Juma tabrigi).
+         * Foreground xizmat boshlanmasa, bildirishnoma o'zi qoladi.
+         */
+        fun speak(ctx: Context, text: String, withVoice: Boolean = true, clip: String? = null, preName: String = ""): Boolean =
             try {
                 ContextCompat.startForegroundService(
                     ctx,
-                    Intent(ctx, SpeechService::class.java).putExtra(Extra.TEXT, if (withVoice) text else "").putExtra(Extra.CLIP, clip),
+                    Intent(ctx, SpeechService::class.java)
+                        .putExtra(Extra.TEXT, if (withVoice) text else "")
+                        .putExtra(Extra.CLIP, clip)
+                        .putExtra(Extra.NAME, preName),
                 )
                 true
             } catch (e: Exception) {

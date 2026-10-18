@@ -7,6 +7,7 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import uz.namozvaqti.core.Juma
 import uz.namozvaqti.core.Prayer
 import uz.namozvaqti.core.PrayerTexts
 import uz.namozvaqti.core.ReminderEvent
@@ -41,6 +42,7 @@ class ReminderReceiver : BroadcastReceiver() {
         val app = ctx.applicationContext
         when (intent.action) {
             Act.REMINDER -> async { handleReminder(app, intent) }
+            Act.JUMA -> async { handleJuma(app, intent) }
             Act.DAILY -> async {
                 ServiceLocator.get(app).times.refresh()
                 Scheduler.rescheduleAll(app)
@@ -75,6 +77,8 @@ class ReminderReceiver : BroadcastReceiver() {
             ReminderKind.FOLLOWUP -> PrayerTexts.followupText(prayer, event.followupIndex, s.policy.followups, s.gentle)
         }
         Notifications.postReminder(ctx, event, text)
+        // Asosiy va qayta eslatma: to'liq ekranli oyna hamma ilovalar ustida ochiladi (ruxsat berilgan bo'lsa).
+        if (event.kind != ReminderKind.PRE && s.popupReminder) ReminderActivity.launch(ctx, event, text)
         // Tayyor ovoz paketi muloyim matnlar uchun yozilgan; oldindan eslatma — faqat 5 daqiqa uchun.
         val clip = if (!s.gentle) null else when (event.kind) {
             ReminderKind.PRE -> if (s.preMinutes == VoiceKeys.PRE_MINUTES) VoiceKeys.pre(prayer) else null
@@ -84,6 +88,19 @@ class ReminderReceiver : BroadcastReceiver() {
         // Ovoz xizmatini boshlab bo'lmasa, tizim ovozi bilan zaxira bildirishnoma.
         if (!SpeechService.speak(ctx, text, withVoice = s.voiceEnabled, clip = clip)) Notifications.postReminder(ctx, event, text, systemSound = true)
     }
+}
+
+/** Juma kuni 13:15: ism bilan tabrik (bildirishnoma + ovoz). */
+private suspend fun handleJuma(ctx: Context, intent: Intent) {
+    val s = ServiceLocator.get(ctx).settings.value
+    Scheduler.scheduleJuma(ctx) // keyingi haftaga
+    if (!s.jumaGreeting) return
+    val at = intent.getStringExtra(Extra.AT)?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() }
+    // Telefon o'chiq bo'lgan va juda kech qolgan tabrik aytilmaydi.
+    if (at != null && Duration.between(at, LocalDateTime.now()).toMinutes() > 60) return
+    val text = Juma.text(s.name)
+    Notifications.postJuma(ctx, text)
+    SpeechService.speak(ctx, text, withVoice = s.voiceEnabled, clip = Juma.CLIP, preName = s.name.trim())
 }
 
 /** Bomdod va Tahajjud budilnigi. */

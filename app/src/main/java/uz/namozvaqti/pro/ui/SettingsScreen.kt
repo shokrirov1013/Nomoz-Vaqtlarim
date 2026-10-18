@@ -115,7 +115,7 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
                     }, small = true, modifier = Modifier.weight(1f))
                     GlassButton("Shaharni tanlash", { cityDialog = true }, small = true, filled = false, modifier = Modifier.weight(1f))
                 }
-                gpsMessage?.let { Text(it, style = Type.Caption.copy(color = Glass.GoldBright), modifier = Modifier.padding(top = 6.dp)) }
+                gpsMessage?.let { Text(it, style = Type.Caption.copy(color = Glass.PinkSoft), modifier = Modifier.padding(top = 6.dp)) }
             }
 
         }
@@ -167,10 +167,13 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
             }
             StepperRow("Eslatma ovozi balandligi", s.reminderVolume, "%", 20, 100, step = 10) { v -> vm.updateSettings(false) { it.copy(reminderVolume = v) } }
             Divider(Modifier.padding(vertical = 6.dp))
-            SwitchRow("Sokin rejimda ham ovoz chiqarish", "Ovoz budilnik kanalidan chaladi", s.playInSilentMode) { on ->
-                    vm.updateSettings(false) { it.copy(playInSilentMode = on) }
+            SwitchRow("Eslatmani boshqa ilovalar ustida ko'rsatish", "Namoz vaqtida to'liq ekranli eslatma o'yin, video va boshqa ilovalar ustidan ochiladi (ruxsat kerak)", s.popupReminder) { on ->
+                    vm.updateSettings(false) { it.copy(popupReminder = on) }
                 }
-                SwitchRow("Ovozli eslatma", "O'chirilsa faqat «ting» chaladi. «Ting» har doim chaladi.", s.voiceEnabled) { on ->
+                SwitchRow("Juma tabrigi", "Har juma 13:15 da ism bilan tabriklaydi: «${s.name.ifBlank { "Ism" }}, Juma bilan tabriklayman»", s.jumaGreeting) { on ->
+                    vm.updateSettings { it.copy(jumaGreeting = on) }
+                }
+                SwitchRow("Ovozli eslatma", "Yoqilgan bo'lsa, ovoz har qanday holatda eshitiladi: jim rejim, naushnik, musiqa paytida ham. O'chirilsa faqat «ting» chaladi.", s.voiceEnabled) { on ->
                     vm.updateSettings(false) { it.copy(voiceEnabled = on) }
                 }
                 DropdownRow(
@@ -243,7 +246,8 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
                 PermRow("Joylashuv (GPS)", Perms.location(ctx)) {
                     gpsLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
                 }
-                PermRow("To'liq ekran budilnigi", Perms.fullScreen(ctx)) { Perms.openFullScreenSettings(ctx) }
+                PermRow("Boshqa ilovalar ustida ko'rsatish", Perms.overlay(ctx)) { Perms.openOverlaySettings(ctx) }
+                PermRow("To'liq ekranli eslatma", Perms.fullScreen(ctx)) { Perms.openFullScreenSettings(ctx) }
                 PermRow("Batareya cheklovisiz ishlash", Perms.batteryUnrestricted(ctx)) { Perms.requestIgnoreBattery(ctx) }
             }
 
@@ -355,7 +359,7 @@ private fun PermRow(title: String, granted: Boolean, onFix: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Text(title, style = Type.Body)
-            Text(if (granted) "Ruxsat berilgan" else "Ruxsat yo'q", style = Type.Caption.copy(color = if (granted) Glass.GoldBright else Glass.Danger))
+            Text(if (granted) "Ruxsat berilgan" else "Ruxsat yo'q", style = Type.Caption.copy(color = if (granted) Glass.PinkSoft else Glass.Danger))
         }
         if (granted) GlassTick(true) else GlassButton("Yoqish", onFix, small = true)
     }

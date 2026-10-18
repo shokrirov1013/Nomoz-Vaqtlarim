@@ -105,7 +105,7 @@ fun OnboardingScreen(vm: AppViewModel) {
                     GlassButton("GPS orqali aniqlash", {
                         gpsLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
                     }, Modifier.fillMaxWidth())
-                    locMsg?.let { Text(it, style = Type.Caption.copy(color = Glass.GoldBright), modifier = Modifier.padding(top = 6.dp)) }
+                    locMsg?.let { Text(it, style = Type.Caption.copy(color = Glass.PinkSoft), modifier = Modifier.padding(top = 6.dp)) }
                     Text("Yoki shaharni qo'lda tanlang:", style = Type.Body, modifier = Modifier.padding(top = 12.dp, bottom = 6.dp))
                     Column(Modifier.heightIn(max = 260.dp).verticalScroll(rememberScrollState())) {
                         UzbekCities.all.forEach { c ->
@@ -130,6 +130,12 @@ fun OnboardingScreen(vm: AppViewModel) {
                     }
                     OnboardPerm("Aniq vaqtdagi budilnik", "Namoz vaqtida aynan o'sha daqiqada chalish uchun", Perms.exactAlarms(ctx)) {
                         Perms.openExactAlarmSettings(ctx)
+                    }
+                    OnboardPerm("Boshqa ilovalar ustida ko'rsatish", "Eslatma o'yin, video yoki boshqa ilova ustidan ham chiqishi uchun", Perms.overlay(ctx)) {
+                        Perms.openOverlaySettings(ctx)
+                    }
+                    OnboardPerm("To'liq ekranli eslatma", "Telefon qulflangan bo'lsa ham eslatma ekrani ochilishi uchun", Perms.fullScreen(ctx)) {
+                        Perms.openFullScreenSettings(ctx)
                     }
                     OnboardPerm("Batareya cheklovisiz ishlash", "Telefon “uyqu” rejimida ham eslatma o'tkazib yuborilmasligi uchun (tavsiya)", Perms.batteryUnrestricted(ctx)) {
                         Perms.requestIgnoreBattery(ctx)

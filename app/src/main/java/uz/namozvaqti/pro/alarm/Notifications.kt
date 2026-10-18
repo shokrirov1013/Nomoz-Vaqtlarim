@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import uz.namozvaqti.core.Juma
 import uz.namozvaqti.core.Prayer
 import uz.namozvaqti.core.ReminderEvent
 import uz.namozvaqti.core.ReminderKind
@@ -32,6 +33,7 @@ object Notifications {
     const val ID_PLAYBACK = 900
     const val ID_RING = 901
     const val ID_UPDATE = 902
+    const val ID_JUMA = 903
 
     fun reminderId(prayer: Prayer) = 1000 + prayer.ordinal
 
@@ -85,16 +87,27 @@ object Notifications {
             ReminderKind.MAIN -> "${event.prayer.title} vaqti"
             ReminderKind.FOLLOWUP -> "${event.prayer.title} — eslatma"
         }
+        // Asosiy va qayta eslatma — eng yuqori ustuvorlik: budilnik toifasi (bildirishnomalar ro'yxatida birinchi turadi,
+        // "Bezovta qilmang" rejimida ham o'tadi), doimiy (ongoing) va to'liq ekranli oyna bilan. Hech kim tegmasa o'zi yo'qoladi.
+        val urgent = event.kind != ReminderKind.PRE
         val b = NotificationCompat.Builder(ctx, if (systemSound) CH_REMINDER_SOUND else CH_REMINDER)
             .setSmallIcon(R.drawable.ic_stat_namoz)
             .setContentTitle(UzText.of(ctx, title))
             .setContentText(UzText.of(ctx, text))
             .setStyle(NotificationCompat.BigTextStyle().bigText(UzText.of(ctx, text)))
-            .setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(if (urgent) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER)
+            .setPriority(if (urgent) NotificationCompat.PRIORITY_MAX else NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(true)
             .setAutoCancel(true)
             .setContentIntent(openAppIntent(ctx, event.prayer.ordinal))
+        if (urgent) {
+            val interval = uz.namozvaqti.pro.ServiceLocator.get(ctx).settings.value.followupIntervalMinutes
+            b.setOngoing(true)
+                .setTimeoutAfter(maxOf(20, interval + 10) * 60_000L)
+                .setFullScreenIntent(ReminderActivity.pendingIntent(ctx, event, text), true)
+        }
         if (event.kind != ReminderKind.PRE) {
             val done = Intent(ctx, ActionReceiver::class.java).setAction(Act.MARK_DONE)
                 .putExtra(Extra.DATE, event.date.toString()).putExtra(Extra.PRAYER, event.prayer.key)
@@ -107,6 +120,22 @@ object Notifications {
             )
         }
         notify(ctx, reminderId(event.prayer), b.build())
+    }
+
+    /** Juma 13:15 tabrigi. */
+    fun postJuma(ctx: Context, text: String) {
+        val n = NotificationCompat.Builder(ctx, CH_REMINDER)
+            .setSmallIcon(R.drawable.ic_stat_namoz)
+            .setContentTitle(UzText.of(ctx, Juma.TITLE))
+            .setContentText(UzText.of(ctx, text))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(UzText.of(ctx, text)))
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .setContentIntent(openAppIntent(ctx, 90))
+            .build()
+        notify(ctx, ID_JUMA, n)
     }
 
     /** Budilnik xizmatini boshlab bo'lmaganda: to'liq ekranli bildirishnoma + tizim budilnik ovozi. */

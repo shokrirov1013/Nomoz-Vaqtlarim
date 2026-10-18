@@ -60,7 +60,7 @@ private fun SurahCard(surah: Surah, expanded: Boolean, onToggle: () -> Unit) {
             }
             Text(
                 surah.arabicTitle,
-                style = Type.H2.copy(fontSize = 22.sp, color = Glass.GoldBright, textDirection = TextDirection.Rtl),
+                style = Type.H2.copy(fontSize = 22.sp, color = Glass.PinkSoft, textDirection = TextDirection.Rtl),
             )
         }
         if (expanded) {
@@ -76,15 +76,15 @@ private fun SurahCard(surah: Surah, expanded: Boolean, onToggle: () -> Unit) {
                     )
                     Text(
                         v.translit,
-                        style = Type.Caption.copy(fontSize = 14.sp, fontStyle = FontStyle.Italic, color = Glass.GoldBright),
+                        style = Type.Caption.copy(fontSize = 14.sp, fontStyle = FontStyle.Italic, color = Glass.PinkSoft),
                         modifier = Modifier.padding(top = 2.dp),
                     )
                 }
             }
             Divider()
-            Text("Ma'nosi", style = Type.BodyBold.copy(color = Glass.Gold), modifier = Modifier.padding(top = 10.dp))
+            Text("Ma'nosi", style = Type.BodyBold.copy(color = Glass.Pink), modifier = Modifier.padding(top = 10.dp))
             Text(surah.meaning, style = Type.Body.copy(fontSize = 15.sp, lineHeight = 22.sp), modifier = Modifier.padding(top = 4.dp))
-            Text(surah.tip, style = Type.Caption.copy(color = Glass.Mint), modifier = Modifier.padding(top = 8.dp))
+            Text(surah.tip, style = Type.Caption.copy(color = Glass.Lilac), modifier = Modifier.padding(top = 8.dp))
         }
     }
 }

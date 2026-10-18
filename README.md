@@ -1,6 +1,6 @@
 # Namoz Vaqtlarim
 
-Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, ikonkaga mos qorong'i zumrad-oltin **Liquid Glass** dizayn).
+Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, qora fonda pushti-siyohrang shaffof **Liquid Glass** dizayn).
 
 | | |
 |---|---|
@@ -12,6 +12,8 @@ Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, ikonkaga 
 
 ## Imkoniyatlar
 
+- **Jonli osmon (bosh sahifa foni)**: quyosh va oy **haqiqiy joyida** (telefon koordinatasi va soatidan hisoblanadi, internet kerak emas): ufqdan chiqadi, botadi; osmon rangi tong, kunduz, shafaq va tunga qarab silliq o'zgaradi; yulduzlar faqat qorong'ida, masjid derazalari shom/tunda yonadi; oy o'z fazasida. Quyosh va oy suyuq shisha shar shaklida. Masjid hilol nuri ichida turadi.
+- **Namoz o'qiyotgan siluet**: foydalanuvchi jinsiga mos (erkak — do'ppili, ayol — ro'mollik), yuzsiz, joynamozda; quyosh/oy tomonidan unga soya tushadi.
 - **Besh vaqt namoz** (Bomdod, Peshin, Asr, Shom, Xufton) + Quyosh chiqishi (namoz hisoblanmaydi).
 - **Namoz vaqti manbalari** ("O'zbekiston" usuli): islom.uz (ishlasa) → **muslim.uz (O'zbekiston Musulmonlari idorasi) bilan sinxronlangan hisob** → telefondagi hisob. Hisob joylashuvingiz uchun aniq bajariladi va har kuni idora vaqtlariga (Bomdod/Shom/Xufton "ehtiyot" daqiqalari) moslanadi. Internet bo'lmasa oxirgi moslama bilan ishlaydi. Manba va yangilanish vaqti bosh sahifada ko'rinadi, "Yangilash" tugmasi bor.
 - **Til va yozuv**: **lotin** yoki **kirill** (Sozlamalar yoki birinchi ochilishda), kattalar uchun "Katta matn". Hamma matn, suralar va bildirishnomalar tanlangan yozuvda chiqadi.
@@ -21,7 +23,10 @@ Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, ikonkaga 
   2. namoz vaqtida: mp3 + “Peshin vaqti bo'ldi, kechiktirmang.” (Bomdod: “Bomdod vaqti bo'ldi. Namozga turing.”)
   3. belgilanmasa — **10 daqiqadan keyin 3 marta** qayta eslatma (oraliq va son sozlanadi).
   4. Juma kuni erkaklarga Peshin vaqtida: “Juma vaqti bo'ldi.”
-- **“Bajarildi” tugmasi**: faqat foydalanuvchi o'zi bosganda saqlanadi (sana + vaqt), qaytarish mumkin, har kun tarixi saqlanadi, o'tgan kunlarni ham belgilash mumkin. Belgilanishi bilan shu namozning qolgan eslatmalari darhol bekor bo'ladi (boshqa namozlarga tegmaydi).
+- **“Bajarildi” tugmasi** — shisha shar: bosilsa suyuqlik to'lib ✓ chiqadi (keyingi namozda shar vaqt o'tishi bilan asta to'lib boradi). Faqat foydalanuvchi o'zi bosganda saqlanadi (sana + vaqt), qaytarish mumkin, har kun tarixi saqlanadi, o'tgan kunlarni ham belgilash mumkin. Belgilanishi bilan shu namozning qolgan eslatmalari darhol bekor bo'ladi (boshqa namozlarga tegmaydi).
+- **Hamma ilovalar ustida**: namoz vaqtida to'liq ekranli eslatma oynasi o'yin, video va boshqa ilovalar ustidan ham ochiladi ("Boshqa ilovalar ustida ko'rsatish" ruxsati bilan; Sozlamalardan o'chirish mumkin). Bildirishnoma budilnik toifasida, doimiy va ro'yxatda birinchi turadi.
+- **Ovoz har qanday holatda**: "Ovozli eslatma" yoqilgan bo'lsa jim rejim, ovoz 0, naushnik (Bluetooth ham) va musiqa paytida ham eshitiladi: naushnik ulansa MEDIA oqimi, aks holda ALARM oqimi; audio fokus qisqa olinadi va musiqa o'zi davom etadi.
+- **Juma tabrigi**: har juma 13:15 da ilovadagi ism bilan “<Ism>, Juma bilan tabriklayman” (bildirishnoma + ovoz; Sozlamalardan o'chiriladi).
 - **Bomdod budilnigi**: ovoz tanlash, vibratsiya, keyinga surish, yoqish/o'chirish, to'liq ekran oynasi.
 - **Tahajjud**: ixtiyoriy kunlarni belgilash, har kun uchun vaqt, haftalik takrorlanish, tunning oxirgi uchdan biri hisobi, ovoz/vibratsiya.
 - **Taqvim**: Milodiy va Hijriy (Um al-Qura, ±2 kun moslash), namoz tarixi va shaxsiy eslatmalar.
@@ -42,7 +47,7 @@ Bu mantiq (`core` moduli) JVM testlari bilan tekshiriladi: `./gradlew :core:test
 
 ## Birinchi marta ishga tushirish va ruxsatlar
 
-Onboarding: ism, jins, joylashuv (GPS yoki shaharni qo'lda tanlash), bildirishnomalar, aniq alarm, batareya cheklovi. Barchasini keyin Sozlamalar → Ruxsatlar bo'limidan o'zgartirish mumkin.
+Onboarding: ism, jins, joylashuv (GPS yoki shaharni qo'lda tanlash), bildirishnomalar, aniq alarm, **boshqa ilovalar ustida ko'rsatish**, to'liq ekranli eslatma, batareya cheklovi. Barchasini keyin Sozlamalar → Ruxsatlar bo'limidan o'zgartirish mumkin.
 
 > Ba'zi telefonlarda (Xiaomi, Huawei, Oppo, Samsung…) “Avto-ishga tushirish” va “Batareya cheklovisiz” ruxsatlarini ilova uchun alohida yoqish kerak — aks holda tizim fon alarmlarini o'ldirishi mumkin.
 
@@ -118,7 +123,8 @@ scripts/publish-to-github.sh
 ## Cheklovlar (halol ro'yxat)
 
 - Ilova namoz o'qilganini **avtomatik bilmaydi**; faqat foydalanuvchi bosgan “Bajarildi” saqlanadi.
-- “Liquid Glass” — shaffof qatlam, nozik chegara va yorug'lik aksi bilan taqlid qilingan; Android'da orqa fonni haqiqiy blur qilish cheklangan.
+- “Liquid Glass” — shaffof qatlam, nozik chegara, yorug' dog' va suyuq shar bilan taqlid qilingan; orqa fonni haqiqiy blur qilish ishlatilmaydi (FPS uchun).
+- Quyosh/oy joyi va fazasi qisqartirilgan astronomik formulalar bilan hisoblanadi (daqiqalar aniqligida) — rasm uchun yetarli, ilmiy asbob emas.
 - Hijriy sana Um al-Qura hisobiga asoslangan; O'zbekistonda e'lon qilingan sanadan farq qilsa, Sozlamalardan ±1–2 kunga moslang.
 
 ## Muallif

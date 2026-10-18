@@ -32,7 +32,8 @@
   "f1_isha": "Xufton namozini o'qishni unutmang, iltimos.",
   "f2_isha": "Xufton namozi hali belgilanmagan. Vaqtingiz bo'lsa, o'qib oling.",
   "fl_isha": "Xufton namozi uchun oxirgi eslatma. Marhamat, vaqtida o'qib oling.",
-  "main_jumah": "Juma muborak bo'lsin. Juma vaqti kirdi, marhamat."
+  "main_jumah": "Juma muborak bo'lsin. Juma vaqti kirdi, marhamat.",
+  "juma_greet": "Juma bilan tabriklayman. Juma muborak bo'lsin."
  },
  "ru": {
   "pre_fajr": "До утреннего намаза осталось пять минут. Пожалуйста, приготовьтесь.",
@@ -60,6 +61,7 @@
   "f1_isha": "Пожалуйста, не забудьте совершить ночной намаз.",
   "f2_isha": "Ночной намаз ещё не отмечен. Если есть время, совершите его.",
   "fl_isha": "Последнее напоминание: ночной намаз. Пожалуйста, совершите его вовремя.",
-  "main_jumah": "Благословенной пятницы! Наступило время пятничной молитвы."
+  "main_jumah": "Благословенной пятницы! Наступило время пятничной молитвы.",
+  "juma_greet": "Поздравляю вас с пятницей. Пусть этот благословенный день принесёт вам радость и мир."
  }
 }
