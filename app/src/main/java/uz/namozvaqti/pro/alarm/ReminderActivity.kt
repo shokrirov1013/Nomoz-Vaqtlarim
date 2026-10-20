@@ -39,8 +39,10 @@ import uz.namozvaqti.core.ReminderEvent
 import uz.namozvaqti.core.ReminderKind
 import uz.namozvaqti.pro.MainActivity
 import uz.namozvaqti.pro.ServiceLocator
+import uz.namozvaqti.pro.ui.DesignMode
 import uz.namozvaqti.pro.ui.Fmt
 import uz.namozvaqti.pro.ui.Glass
+import uz.namozvaqti.pro.ui.GlassBackground
 import uz.namozvaqti.pro.ui.GlassButton
 import uz.namozvaqti.pro.ui.GlassCard
 import uz.namozvaqti.pro.ui.LocalCyrillic
@@ -81,15 +83,18 @@ class ReminderActivity : ComponentActivity() {
             return
         }
         val app = applicationContext
+        Glass.apply(ServiceLocator.get(app).settings.value.design)
 
         setContent {
             val st = ServiceLocator.get(app).settings.value
             val now = remember { LocalDateTime.now() }
             CompositionLocalProvider(LocalCyrillic provides st.cyrillic) {
                 NamozTheme {
-                    Box(Modifier.fillMaxSize()) {
-                        SkyBackdrop(st.lat, st.lon, st.gender, now)
-                        Box(Modifier.fillMaxSize().background(Glass.Bg.copy(alpha = 0.5f)))
+                    GlassBackground {
+                        if (Glass.mode == DesignMode.SKY) {
+                            SkyBackdrop(st.lat, st.lon, st.gender, now)
+                            Box(Modifier.fillMaxSize().background(Glass.Bg.copy(alpha = 0.5f)))
+                        }
                         val cur = info
                         if (cur != null) {
                             // Hech kim tegmasa 2 daqiqadan keyin o'zi yopiladi (bildirishnoma va qayta eslatmalar davom etadi).

@@ -1,6 +1,6 @@
 # Namoz Vaqtlarim
 
-Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, qora fonda pushti-siyohrang shaffof **Liquid Glass** dizayn).
+Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose). Ikki dizayn: **Kun-tun** (jonli osmon, qora fonda pushti-siyohrang shaffof Liquid Glass) va **Blur glass** (sodda shaffof shisha, to'q zumrad fonda oltin urg'u) — foydalanuvchi o'zi tanlaydi.
 
 | | |
 |---|---|
@@ -11,6 +11,10 @@ Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, qora fond
 | Fon vazifalari | AlarmManager (aniq alarm), WorkManager, foreground xizmat |
 
 ## Imkoniyatlar
+
+- **Ikki dizayn (tanlanadi)**: birinchi ochilishda yoki Sozlamalar → Dizayn'da almashtiriladi, ilova darhol qayta bo'yaladi.
+  - **Kun-tun** (standart): quyidagi jonli osmon, namoz siluet va suyuq shisha shar tugmalar.
+  - **Blur glass (sodda)**: tekis to'q zumrad fon (gradientsiz) va biroz ko'rinarli oltin islomiy naqsh; kartalar va tugmalar yaltiroqsiz xira shisha (ostidagi naqsh yumshab ko'rinadi, burchakda zo'rg'a seziladigan yumshoq nur); bosh sahifa v1.1.0 tartibida (Keyingi namoz, Bugungi namozlar, tezkor tugmalar). Pastki panel ikkala dizaynda ham yonuvchi oltin/pushti pufakli suyuq shisha. Haqiqiy backdrop-blur Compose'da yo'q, shuning uchun xiralik fon rangidan "muz" qatlami bilan taqlid qilingan (FPS uchun).
 
 - **Jonli osmon (bosh sahifa foni)**: quyosh va oy **haqiqiy joyida** (telefon koordinatasi va soatidan hisoblanadi, internet kerak emas): ufqdan chiqadi, botadi; osmon rangi tong, kunduz, shafaq va tunga qarab silliq o'zgaradi; yulduzlar faqat qorong'ida, masjid derazalari shom/tunda yonadi; oy o'z fazasida. Quyosh va oy suyuq shisha shar shaklida. Masjid hilol nuri ichida turadi.
 - **Namoz o'qiyotgan siluet**: foydalanuvchi jinsiga mos (erkak — do'ppili, ayol — ro'mollik), yuzsiz, joynamozda; quyosh/oy tomonidan unga soya tushadi.
@@ -32,6 +36,7 @@ Android uchun islomiy namoz eslatma ilovasi (Kotlin + Jetpack Compose, qora fond
 - **Taqvim**: Milodiy va Hijriy (Um al-Qura, ±2 kun moslash), namoz tarixi va shaxsiy eslatmalar.
 - **Tarix va statistika**: kunlik/haftalik/oylik — faqat foydalanuvchi belgilagan ma'lumotlar asosida (belgilanmagan = “belgilanmagan”, “o'qilmagan” emas).
 - **Suralar**: Oyatal Kursi, Fotiha, Ixlos, Falaq va Nos — arabcha matn, o'qilishi va ma'nosi **O'zbekiston Musulmonlari idorasi rasmiy sayti (muslim.uz)** matnidan; lotin/kirillda ko'rsatiladi.
+- **Tasbeh** (Suralar bo'limida, "Suralar | Tasbeh" tanlovi): katta doirani bossangiz son oshadi, halqa maqsadgacha to'lib boradi; 8 ta zikr (Subhanalloh, Alhamdulillah, Allohu akbar, La ilaha illalloh, Astag'firulloh, Salovot, La havla…, Erkin sanash), maqsad 33 / 99 / 100 / ∞; davralar, jami va bugungi son; −1 va nolga tushirish; yengil tebranish (davra tugaganda kuchliroq). Har zikrning soni telefon xotirasida saqlanadi.
 - **Muloyim ohang** (standart yoqilgan): qisqa va yumshoq "ting", asta kuchayadigan budilnik, yengil tebranish, muloyim matnlar; ovoz balandligi sozlanadi. O'chirib, dastlabki qisqa matnlarga qaytish mumkin.
 - **Yangilanish**: GitHub Releases orqali tekshiradi, yangi versiya raqami + o'zgarishlar + “Yuklab olish va o'rnatish”.
 

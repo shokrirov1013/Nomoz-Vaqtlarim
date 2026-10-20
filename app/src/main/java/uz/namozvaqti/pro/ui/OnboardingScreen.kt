@@ -84,6 +84,14 @@ fun OnboardingScreen(vm: AppViewModel) {
                         GlassChip("Ўзбекча (Кирилл)", s.cyrillic, { vm.updateSettings(false) { it.copy(script = "cyrillic") } }, raw = true)
                     }
                     Box(Modifier.height(12.dp))
+                    Text("Dizayn", style = Type.H2)
+                    Text("Ilova ko'rinishini tanlang — keyin Sozlamalardan o'zgartirish mumkin.", style = Type.Caption)
+                    DesignPicker(
+                        s.design,
+                        { key -> Glass.apply(key); vm.updateSettings(false) { it.copy(design = key) } },
+                        Modifier.padding(top = 8.dp),
+                    )
+                    Box(Modifier.height(14.dp))
                     Text("Assalomu alaykum!", style = Type.H2)
                     Text("Sizga mos eslatmalar uchun ozgina ma'lumot kerak. Boshqa shaxsiy ma'lumot yig'ilmaydi.", style = Type.Caption)
                     OutlinedTextField(

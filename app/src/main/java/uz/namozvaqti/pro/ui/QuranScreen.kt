@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -22,20 +24,32 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Suralar: kartani bosganda ochiladi/yopiladi. LazyColumn — faqat ko'rinadiganlari chiziladi (tez). */
+/** Suralar va Tasbeh: tepada ikkita tanlov. Suralar kartani bosganda ochiladi/yopiladi (LazyColumn — faqat ko'rinadiganlari chiziladi). */
 @Composable
 fun QuranScreen() {
+    var tab by rememberSaveable { mutableIntStateOf(0) }
+    Column(Modifier.fillMaxSize()) {
+        Column(Modifier.padding(horizontal = 16.dp).padding(top = 4.dp, bottom = 8.dp)) {
+            Text(if (tab == 0) "Suralar" else "Tasbeh", style = Type.H1)
+            Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                GlassChip("Suralar", tab == 0, { tab = 0 })
+                GlassChip("Tasbeh", tab == 1, { tab = 1 })
+            }
+        }
+        if (tab == 0) SurahList(Modifier.weight(1f)) else TasbehScreen(Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun SurahList(modifier: Modifier = Modifier) {
     var openId by rememberSaveable { mutableStateOf<String?>(null) }
     LazyColumn(
-        Modifier.padding(horizontal = 16.dp),
+        modifier.padding(horizontal = 16.dp),
         flingBehavior = SoftFling,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "title") {
-            Column(Modifier.padding(top = 4.dp)) {
-                Text("Suralar", style = Type.H1)
-                Text("Oyatal Kursi, Fotiha, Ixlos, Falaq va Nos. Kartani bosing.", style = Type.Caption)
-            }
+            Text("Oyatal Kursi, Fotiha, Ixlos, Falaq va Nos. Kartani bosing.", style = Type.Caption)
         }
         items(QuranData.all, key = { it.id }) { surah ->
             SurahCard(surah, expanded = openId == surah.id) { openId = if (openId == surah.id) null else surah.id }

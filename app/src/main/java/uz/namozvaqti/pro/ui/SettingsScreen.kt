@@ -75,6 +75,17 @@ fun SettingsScreen(vm: AppViewModel, go: (Screen) -> Unit) {
         }
         item {
             GlassCard(Modifier.fillMaxWidth()) {
+                Text("Dizayn", style = Type.H2)
+                Text("Ko'zingizga qulay ko'rinishni tanlang. Istalgan vaqt almashtirish mumkin.", style = Type.Caption)
+                DesignPicker(
+                    s.design,
+                    { key -> Glass.apply(key); vm.updateSettings(false) { it.copy(design = key) } },
+                    Modifier.padding(top = 10.dp),
+                )
+            }
+        }
+        item {
+            GlassCard(Modifier.fillMaxWidth()) {
                 Text("Til va yozuv", style = Type.H2)
                 Text("Ilovadagi hamma matn, suralar va bildirishnomalar tanlangan yozuvda chiqadi.", style = Type.Caption)
                 Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

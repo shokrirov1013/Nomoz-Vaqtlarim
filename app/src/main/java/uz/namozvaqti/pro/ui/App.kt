@@ -45,7 +45,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.IntOffset
@@ -121,6 +123,8 @@ private fun AppBackdrop(vm: AppViewModel, homeVisible: Boolean) {
     val now = vm.now.collectAsState()
     val minute by remember { derivedStateOf { now.value.truncatedTo(ChronoUnit.MINUTES) } }
     val scrim by animateFloatAsState(if (homeVisible) 0f else 0.62f, tween(450), label = "scrim")
+    // Sodda blur glass rejimida osmon yo'q: tekis fon va naqsh GlassBackground'ning o'zida chiziladi.
+    if (Glass.mode == DesignMode.GLASS) return
     Box(Modifier.fillMaxSize()) {
         SkyBackdrop(s.lat, s.lon, s.gender, minute)
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = scrim }.background(Glass.Bg))
@@ -142,7 +146,7 @@ private fun BottomBar(current: Screen, onSelect: (Screen) -> Unit, modifier: Mod
                 .fillMaxWidth()
                 .height(64.dp)
                 .background(Glass.Bg.copy(alpha = 0.42f), CircleShape)
-                .glassSurface(CircleShape, strength = 1.15f),
+                .glassSurface(CircleShape, strength = 1.15f, lit = true),
         ) {
             val slot = (maxWidth - 12.dp) / TABS.size
             val x by animateDpAsState(6.dp + slot * idx + (slot - 48.dp) / 2, spring(dampingRatio = 0.62f, stiffness = 420f), label = "bubble")
@@ -150,9 +154,18 @@ private fun BottomBar(current: Screen, onSelect: (Screen) -> Unit, modifier: Mod
                 Modifier
                     .offset { IntOffset(x.roundToPx(), 8.dp.roundToPx()) }
                     .size(48.dp)
-                    .background(Brush.linearGradient(listOf(Glass.Pink.copy(alpha = 0.55f), Glass.Violet.copy(alpha = 0.5f))), CircleShape)
+                    // yonuvchi pufak: sodda blur glass rejimida atrofida yumshoq oltin nur ham bor
+                    .drawBehind {
+                        if (Glass.mode == DesignMode.GLASS) {
+                            drawCircle(
+                                Brush.radialGradient(listOf(Glass.Pink.copy(alpha = 0.40f), Color.Transparent), radius = 34.dp.toPx()),
+                                34.dp.toPx(),
+                            )
+                        }
+                    }
+                    .background(Brush.linearGradient(listOf(Glass.p.bubbleStart, Glass.p.bubbleEnd)), CircleShape)
                     .gloss(CircleShape, 0.28f)
-                    .glassSurface(CircleShape, Glass.Tint, 1.2f),
+                    .glassSurface(CircleShape, Glass.Tint, 1.2f, lit = true),
             )
             Row(
                 Modifier.fillMaxSize().padding(horizontal = 6.dp),

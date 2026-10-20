@@ -58,6 +58,7 @@ class AlarmActivity : ComponentActivity() {
         val kind = RingKind.fromKey(intent.getStringExtra(Extra.KIND))
         val app = applicationContext
 
+        uz.namozvaqti.pro.ui.Glass.apply(ServiceLocator.get(app).settings.value.design)
         setContent {
             val cyr = ServiceLocator.get(app).settings.value.cyrillic
             androidx.compose.runtime.CompositionLocalProvider(uz.namozvaqti.pro.ui.LocalCyrillic provides cyr) {

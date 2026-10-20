@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,9 +55,9 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
-private data class NextPrayer(val prayer: Prayer, val at: LocalDateTime)
+internal data class NextPrayer(val prayer: Prayer, val at: LocalDateTime)
 
-private fun nextPrayerOf(now: LocalDateTime, today: LocalDate, t: PrayerTimes?, tomorrow: PrayerTimes?): NextPrayer? {
+internal fun nextPrayerOf(now: LocalDateTime, today: LocalDate, t: PrayerTimes?, tomorrow: PrayerTimes?): NextPrayer? {
     if (t == null) return null
     Prayer.entries.forEach { p ->
         val at = LocalDateTime.of(today, t.of(p))
@@ -66,7 +67,7 @@ private fun nextPrayerOf(now: LocalDateTime, today: LocalDate, t: PrayerTimes?, 
 }
 
 /** Oldingi namoz vaqtidan keyingisigacha o'tgan ulush (0..1): suyuq shar va chiziq shu bilan to'lib boradi. */
-private fun elapsedFraction(now: LocalDateTime, today: LocalDate, t: PrayerTimes?, next: NextPrayer?): Float {
+internal fun elapsedFraction(now: LocalDateTime, today: LocalDate, t: PrayerTimes?, next: NextPrayer?): Float {
     if (t == null || next == null) return 0f
     val prev = Prayer.entries.map { LocalDateTime.of(today, t.of(it)) }.lastOrNull { !it.isAfter(now) } ?: today.atStartOfDay()
     val total = Duration.between(prev, next.at).seconds.coerceAtLeast(1)
@@ -74,8 +75,9 @@ private fun elapsedFraction(now: LocalDateTime, today: LocalDate, t: PrayerTimes
 }
 
 /**
- * Bosh sahifa. Orqa fonda (SkyBackdrop) haqiqiy quyosh/oy holati, foydalanuvchi jinsiga mos namoz silueti;
+ * Bosh sahifa. Kun-tun rejimida orqa fonda (SkyBackdrop) haqiqiy quyosh/oy holati, foydalanuvchi jinsiga mos namoz silueti;
  * ustida shaffof "suyuq shisha" kartalar. Fon qimirlamaydi — faqat kartalar siljiydi.
+ * Sodda blur glass rejimida — [HomeBlur] (HomeBlur.kt).
  */
 @Composable
 fun HomeScreen(vm: AppViewModel, go: (Screen) -> Unit) {
@@ -98,7 +100,10 @@ fun HomeScreen(vm: AppViewModel, go: (Screen) -> Unit) {
     val minute by remember { derivedStateOf { nowState.value.truncatedTo(ChronoUnit.MINUTES) } }
     val phase = remember(minute, s.lat, s.lon) { skyPhase(minute, s.lat, s.lon) }
 
-    BoxWithConstraints(Modifier.fillMaxSize()) {
+    if (Glass.mode == DesignMode.GLASS) {
+        // Sodda blur glass rejimi: v1.1.0 tartibidagi bosh sahifa (osmon sahnasi yo'q).
+        HomeBlur(vm, s, today, times, next, nowState, doneMap, info, go) { confirmUndo = it }
+    } else BoxWithConstraints(Modifier.fillMaxSize()) {
         val screenW = maxWidth
         val sceneH = screenW * (SKY_SCENE_HEIGHT / 360f)
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState(), flingBehavior = SoftFling)) {
@@ -281,7 +286,7 @@ private fun SunriseLine(t: LocalTime) {
 }
 
 @Composable
-private fun Warnings(go: (Screen) -> Unit) {
+internal fun Warnings(go: (Screen) -> Unit) {
     val ctx = LocalContext.current
     rememberResumeTick()
     val problems = buildList {
@@ -299,7 +304,9 @@ private fun Warnings(go: (Screen) -> Unit) {
 
 // ---- boshqa ekranlar ham ishlatadigan umumiy bo'laklar
 
-private val DoneBrush = Brush.linearGradient(listOf(Glass.Violet.copy(alpha = 0.32f), Glass.Pink.copy(alpha = 0.22f)))
+private val DoneBrush: Brush
+    get() = if (Glass.mode == DesignMode.GLASS) SolidColor(Glass.Pink.copy(alpha = 0.18f))
+    else Brush.linearGradient(listOf(Glass.Violet.copy(alpha = 0.32f), Glass.Pink.copy(alpha = 0.22f)))
 
 @Composable
 fun DoneChip(onClick: () -> Unit) {
@@ -315,8 +322,8 @@ fun DoneChip(onClick: () -> Unit) {
     }
 }
 
-private val TrackColor = Glass.Lilac.copy(alpha = 0.14f)
-private val FillBrush = Brush.horizontalGradient(listOf(Glass.Violet, Glass.Pink))
+private val TrackColor: Color get() = Glass.Lilac.copy(alpha = 0.14f)
+private val FillBrush: Brush get() = Brush.horizontalGradient(listOf(Glass.Violet, Glass.Pink))
 
 @Composable
 fun ProgressBar(fraction: Float, modifier: Modifier = Modifier) {

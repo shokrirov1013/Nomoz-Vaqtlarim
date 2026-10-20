@@ -162,7 +162,7 @@ private fun gregorianRangeLabel(cells: List<Cell>): String {
 }
 
 private val CellShape = RoundedCornerShape(14.dp)
-private val SelectedBrush = Brush.linearGradient(listOf(Glass.PinkSoft, Glass.Magenta))
+private val SelectedBrush: Brush get() = Brush.linearGradient(listOf(Glass.PinkSoft, Glass.Magenta))
 
 @Composable
 private fun DayCell(

@@ -48,6 +48,8 @@ data class Settings(
     val script: String = "latin",
     /** Kattalar uchun kattaroq matn. */
     val bigText: Boolean = false,
+    /** Dizayn: "sky" (kun-tun osmoni) yoki "glass" (sodda blur glass). */
+    val design: String = "sky",
     val gentle: Boolean = true,
     val reminderVolume: Int = 70,
     val ttsLang: String = "auto",
@@ -111,6 +113,7 @@ class SettingsStore(context: Context) {
             voiceSource = p.getString("voiceSource", d.voiceSource) ?: d.voiceSource,
             script = p.getString("script", d.script) ?: d.script,
             bigText = p.getBoolean("bigText", d.bigText),
+            design = p.getString("design", d.design) ?: d.design,
             gentle = p.getBoolean("gentle", d.gentle),
             reminderVolume = p.getInt("reminderVolume", d.reminderVolume),
             ttsLang = p.getString("ttsLang", d.ttsLang) ?: d.ttsLang,
@@ -152,6 +155,7 @@ class SettingsStore(context: Context) {
             putString("voiceSource", s.voiceSource)
             putString("script", s.script)
             putBoolean("bigText", s.bigText)
+            putString("design", s.design)
             putBoolean("gentle", s.gentle)
             putInt("reminderVolume", s.reminderVolume)
             putString("ttsLang", s.ttsLang)
